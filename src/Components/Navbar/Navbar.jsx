@@ -1,11 +1,12 @@
 import React from 'react'
 import './Navbar.css'
+import logo from '../../assets/logo-gwh.png'
 
 const Navbar = () => {
   return (
-    <div className='Navbar'>
+    <div className='navbar'>
 
-      <img src="" alt="" className='logo'/>
+      <img src={logo} alt="" className='logo'/>
 
       <ul>
         <li>Home</li>
@@ -13,11 +14,10 @@ const Navbar = () => {
         <li>About</li>
       </ul>
       <div className='search-box'>
-        <input type="text" placeholder='Search' />
-        <img src="" alt="" />
+        <input type="text" placeholder='Suche' />
       </div>
 
-      
+
     </div>
   )
 }
