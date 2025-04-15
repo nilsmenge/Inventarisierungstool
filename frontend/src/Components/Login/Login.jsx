@@ -1,8 +1,6 @@
 import React from 'react'
 import logo from '../../assets/logo-gwh.png'
 import './Login.css'
-import { FaUser } from "react-icons/fa"
-import { FaLock } from "react-icons/fa"
 
 
 const Login = () => {
