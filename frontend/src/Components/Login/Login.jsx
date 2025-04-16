@@ -1,9 +1,19 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo-gwh.png'
 import './Login.css'
 
 
 const Login = () => {
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        navigate('/scanner');
+    };
+
+
+
+
   return (
     <div className='login-container'>
         <div className='login-box'>
@@ -21,7 +31,7 @@ const Login = () => {
                 <input type='password' name='password'/>
             </div>
             <div className='button'>    
-                <input type='submit' value='Anmelden'/>
+                <input type='submit' value='Anmelden' onClick={handleClick}/>
             </div>
         </form>
         <div>
