@@ -16,6 +16,7 @@ const QrBarcodeScanner = () => {
   const streamRef = useRef(null);
   const zxingReaderRef = useRef(null);
   const countdownTimerRef = useRef(null);
+  const scanIntervalRef = useRef(null);  // Neuer Ref für das Scan-Intervall
 
   // ZXing Barcode Reader initialisieren
   useEffect(() => {
@@ -47,6 +48,9 @@ const QrBarcodeScanner = () => {
       if (countdownTimerRef.current) {
         clearInterval(countdownTimerRef.current);
       }
+      if (scanIntervalRef.current) {
+        clearInterval(scanIntervalRef.current);
+      }
     };
   }, []);
 
@@ -63,22 +67,34 @@ const QrBarcodeScanner = () => {
       });
       
       streamRef.current = stream;
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play();
         
-        // 3-Sekunden Countdown starten
-        countdownTimerRef.current = setInterval(() => {
-          setCountdown(prevCount => {
-            if (prevCount <= 1) {
-              clearInterval(countdownTimerRef.current);
-              // Nach Countdown den eigentlichen Scan starten
-              startActualScanning();
-              return 0;
-            }
-            return prevCount - 1;
+        // Warten, bis das Video vollständig geladen ist
+        videoRef.current.onloadedmetadata = () => {
+          videoRef.current.play().then(() => {
+            console.log("Video playback started");
+            
+            // 3-Sekunden Countdown starten
+            countdownTimerRef.current = setInterval(() => {
+              setCountdown(prevCount => {
+                if (prevCount <= 1) {
+                  clearInterval(countdownTimerRef.current);
+                  // Nach Countdown den eigentlichen Scan starten
+                  startActualScanning();
+                  return 0;
+                }
+                return prevCount - 1;
+              });
+            }, 1000);
+          }).catch(err => {
+            setError('Video konnte nicht abgespielt werden: ' + err.message);
+            setPreparing(false);
           });
-        }, 1000);
+        };
+      } else {
+        throw new Error('Video-Element nicht gefunden');
       }
     } catch (err) {
       setError('Kamera konnte nicht aktiviert werden: ' + err.message);
@@ -87,34 +103,92 @@ const QrBarcodeScanner = () => {
   };
 
   const startActualScanning = () => {
+    console.log("Starte das eigentliche Scannen im Modus:", scanMode);
     setPreparing(false);
     setScanning(true);
     
     if (scanMode === 'barcode' && zxingReaderRef.current) {
       // ZXing Methode für Barcodes
-      zxingReaderRef.current.decodeFromConstraints(
-        { video: { facingMode: 'environment' } },
-        videoRef.current,
-        (result, error) => {
-          if (result) {
-            setResult(result.getText());
-            stopScanning();
+      try {
+        zxingReaderRef.current.decodeFromConstraints(
+          { video: { facingMode: 'environment' } },
+          videoRef.current,
+          (result, error) => {
+            if (result) {
+              console.log("Barcode gefunden:", result.getText());
+              setResult(result.getText());
+              stopScanning();
+            }
+            if (error && !(error instanceof TypeError)) {
+              // TypeError ignorieren - sind meist nur Frames ohne Barcode
+              console.log("ZXing Error (nicht kritisch):", error);
+            }
           }
-          if (error && !(error instanceof TypeError)) {
-            // TypeError ignorieren - sind meist nur Frames ohne Barcode
-            console.log(error);
-          }
-        }
-      );
+        );
+      } catch (err) {
+        console.error("Fehler beim Starten des Barcode-Scanners:", err);
+        setError('Fehler beim Starten des Barcode-Scanners: ' + err.message);
+        stopScanning();
+      }
     } else {
       // jsQR Methode für QR-Codes
-      requestAnimationFrame(scanQRCode);
+      // Anstatt requestAnimationFrame verwenden wir ein Intervall
+      // Dies gibt mehr Kontrolle über die Scan-Frequenz
+      scanIntervalRef.current = setInterval(() => {
+        if (!videoRef.current || !canvasRef.current) return;
+        
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        
+        // Stellen Sie sicher, dass das Video geladen ist
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          // Größe des Canvas an das Video anpassen
+          canvas.width = video.videoWidth || 640;
+          canvas.height = video.videoHeight || 480;
+          
+          // Bild vom Video auf den Canvas übertragen
+          try {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // QR-Code mit jsQR erkennen
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // Debugging: Log die Größe der Image-Daten
+            console.log("Verarbeite Bild:", imageData.width, "x", imageData.height);
+            
+            try {
+              const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                inversionAttempts: "dontInvert",
+              });
+              
+              if (code) {
+                console.log("QR-Code gefunden:", code.data);
+                setResult(code.data);
+                stopScanning();
+              }
+            } catch (qrErr) {
+              console.error("jsQR Error:", qrErr);
+            }
+          } catch (drawErr) {
+            console.error("Error drawing video to canvas:", drawErr);
+          }
+        } else {
+          console.log("Video not ready yet. readyState:", video.readyState);
+        }
+      }, 500); // Scan alle 500ms durchführen - bessere Balance zwischen Performance und Zuverlässigkeit
     }
   };
 
   const stopScanning = () => {
+    console.log("Scanning wird gestoppt");
+    
     if (countdownTimerRef.current) {
       clearInterval(countdownTimerRef.current);
+    }
+    
+    if (scanIntervalRef.current) {
+      clearInterval(scanIntervalRef.current);
     }
 
     if (scanMode === 'barcode' && zxingReaderRef.current) {
@@ -133,39 +207,6 @@ const QrBarcodeScanner = () => {
     
     setScanning(false);
     setPreparing(false);
-  };
-
-  const scanQRCode = () => {
-    if (!scanning || !videoRef.current || !canvasRef.current) return;
-
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-
-    // Stellen Sie sicher, dass das Video geladen ist
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      // Größe des Canvas an das Video anpassen
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      
-      // Bild vom Video auf den Canvas übertragen
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      
-      // QR-Code mit jsQR erkennen
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: "dontInvert",  // Verbessert die Performance
-      });
-      
-      if (code) {
-        setResult(code.data);
-        stopScanning();
-        return;
-      }
-    }
-
-    // Nächsten Frame scannen
-    requestAnimationFrame(scanQRCode);
   };
 
   const toggleScanMode = () => {
@@ -197,7 +238,7 @@ const QrBarcodeScanner = () => {
       </div>
       
       <div className="scanner-preview">
-        <video ref={videoRef} className="scanner-video" />
+        <video ref={videoRef} className="scanner-video" playsInline />
         <canvas ref={canvasRef} className="scanner-canvas" />
         
         {(scanning || preparing) && (
