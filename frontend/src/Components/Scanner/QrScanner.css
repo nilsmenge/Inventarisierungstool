@@ -5,6 +5,10 @@
     font-family: Arial, sans-serif;
   }
   
+  .qr-scanner-container h2{
+    text-align: center;
+    margin-bottom: 5%;
+  }
   .scanner-mode {
     display: flex;
     justify-content: center;
@@ -172,12 +176,12 @@
   }
   
   .scan-button {
-    background-color: #4CAF50;
+    background-color: #009b99;
     color: white;
   }
   
   .scan-button:hover {
-    background-color: #45a049;
+    background-color: #008785;
   }
   
   .stop-button {

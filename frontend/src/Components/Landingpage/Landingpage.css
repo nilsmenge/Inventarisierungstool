@@ -55,6 +55,10 @@ button{
     cursor: pointer;
 }
 
+button:hover{
+    background-color: #008785;
+}
+
 @media (max-width: 768px) {
     .text-btn-container{
         top: 50%;
