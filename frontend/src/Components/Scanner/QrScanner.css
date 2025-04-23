@@ -131,6 +131,7 @@
     margin-bottom: 20px;
     border-radius: 8px;
     border-left: 4px solid #4CAF50;
+    transition-delay: 0.5s;
   }
   
   .result-text {
