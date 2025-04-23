@@ -6,6 +6,8 @@ import './QrScanner.css';
 
 const QrBarcodeScanner = () => {
   const [scanning, setScanning] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   const [result, setResult] = useState('');
   const [error, setError] = useState(null);
   const [scanMode, setScanMode] = useState('qr'); // 'qr' oder 'barcode'
@@ -13,6 +15,7 @@ const QrBarcodeScanner = () => {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const zxingReaderRef = useRef(null);
+  const countdownTimerRef = useRef(null);
 
   // ZXing Barcode Reader initialisieren
   useEffect(() => {
@@ -41,67 +44,95 @@ const QrBarcodeScanner = () => {
   useEffect(() => {
     return () => {
       stopScanning();
+      if (countdownTimerRef.current) {
+        clearInterval(countdownTimerRef.current);
+      }
     };
   }, []);
 
-  const startScanning = async () => {
+  const prepareScanner = async () => {
     setError(null);
     setResult('');
+    setPreparing(true);
+    setCountdown(3);
     
     try {
-      if (scanMode === 'barcode' && zxingReaderRef.current) {
-        // ZXing Methode für Barcodes
-        zxingReaderRef.current.decodeFromConstraints(
-          { video: { facingMode: 'environment' } },
-          videoRef.current,
-          (result, error) => {
-            if (result) {
-              setResult(result.getText());
-              stopScanning();
-            }
-            if (error && !(error instanceof TypeError)) {
-              // TypeError ignorieren - sind meist nur Frames ohne Barcode
-              console.log(error);
-            }
-          }
-        );
-        setScanning(true);
-      } else {
-        // jsQR Methode für QR-Codes
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'environment' } 
-        });
+      // Kamera aktivieren, unabhängig vom Modus
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } 
+      });
+      
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
         
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play();
-          setScanning(true);
-          requestAnimationFrame(scanQRCode);
-        }
+        // 3-Sekunden Countdown starten
+        countdownTimerRef.current = setInterval(() => {
+          setCountdown(prevCount => {
+            if (prevCount <= 1) {
+              clearInterval(countdownTimerRef.current);
+              // Nach Countdown den eigentlichen Scan starten
+              startActualScanning();
+              return 0;
+            }
+            return prevCount - 1;
+          });
+        }, 1000);
       }
     } catch (err) {
       setError('Kamera konnte nicht aktiviert werden: ' + err.message);
-      setScanning(false);
+      setPreparing(false);
+    }
+  };
+
+  const startActualScanning = () => {
+    setPreparing(false);
+    setScanning(true);
+    
+    if (scanMode === 'barcode' && zxingReaderRef.current) {
+      // ZXing Methode für Barcodes
+      zxingReaderRef.current.decodeFromConstraints(
+        { video: { facingMode: 'environment' } },
+        videoRef.current,
+        (result, error) => {
+          if (result) {
+            setResult(result.getText());
+            stopScanning();
+          }
+          if (error && !(error instanceof TypeError)) {
+            // TypeError ignorieren - sind meist nur Frames ohne Barcode
+            console.log(error);
+          }
+        }
+      );
+    } else {
+      // jsQR Methode für QR-Codes
+      requestAnimationFrame(scanQRCode);
     }
   };
 
   const stopScanning = () => {
+    if (countdownTimerRef.current) {
+      clearInterval(countdownTimerRef.current);
+    }
+
     if (scanMode === 'barcode' && zxingReaderRef.current) {
       zxingReaderRef.current.reset();
-    } else {
-      if (streamRef.current) {
-        const tracks = streamRef.current.getTracks();
-        tracks.forEach(track => track.stop());
-        streamRef.current = null;
-      }
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
+    }
+    
+    if (streamRef.current) {
+      const tracks = streamRef.current.getTracks();
+      tracks.forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
     }
     
     setScanning(false);
+    setPreparing(false);
   };
 
   const scanQRCode = () => {
@@ -138,7 +169,7 @@ const QrBarcodeScanner = () => {
   };
 
   const toggleScanMode = () => {
-    if (scanning) {
+    if (scanning || preparing) {
       stopScanning();
     }
     setScanMode(prevMode => prevMode === 'qr' ? 'barcode' : 'qr');
@@ -152,14 +183,14 @@ const QrBarcodeScanner = () => {
         <button 
           className={`mode-button ${scanMode === 'qr' ? 'active' : ''}`}
           onClick={() => setScanMode('qr')}
-          disabled={scanning}
+          disabled={scanning || preparing}
         >
           QR-Code
         </button>
         <button 
           className={`mode-button ${scanMode === 'barcode' ? 'active' : ''}`}
           onClick={() => setScanMode('barcode')}
-          disabled={scanning}
+          disabled={scanning || preparing}
         >
           Barcode
         </button>
@@ -169,13 +200,19 @@ const QrBarcodeScanner = () => {
         <video ref={videoRef} className="scanner-video" />
         <canvas ref={canvasRef} className="scanner-canvas" />
         
-        {scanning && (
+        {(scanning || preparing) && (
           <div className="scanner-overlay">
             <div className="scanner-corner top-left"></div>
             <div className="scanner-corner top-right"></div>
             <div className="scanner-corner bottom-left"></div>
             <div className="scanner-corner bottom-right"></div>
-            {scanMode === 'barcode' && <div className="barcode-line"></div>}
+            {scanMode === 'barcode' && scanning && <div className="barcode-line"></div>}
+            
+            {preparing && (
+              <div className="countdown-overlay">
+                <div className="countdown-number">{countdown}</div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -195,13 +232,13 @@ const QrBarcodeScanner = () => {
       {error && <p className="error-message">{error}</p>}
       
       <div className="button-container">
-        {!scanning ? (
-          <button className="scan-button" onClick={startScanning}>
+        {!scanning && !preparing ? (
+          <button className="scan-button" onClick={prepareScanner}>
             {scanMode === 'qr' ? 'QR-Code scannen' : 'Barcode scannen'}
           </button>
         ) : (
           <button className="stop-button" onClick={stopScanning}>
-            Scannen stoppen
+            {preparing ? 'Vorbereitung abbrechen' : 'Scannen stoppen'}
           </button>
         )}
       </div>
