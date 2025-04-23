@@ -57,6 +57,7 @@
   }
   .button{
     margin-top: 5%;
+    margin-bottom: 5%;
   }
   .button input{
     background-color: #009b99;
@@ -67,4 +68,10 @@
     font-size: medium;
     width: 100%;
     cursor: pointer;
+}
+.link-pw{
+  text-align: center;
+}
+.link-pw a{
+  text-decoration: none;
 }

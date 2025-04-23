@@ -34,7 +34,7 @@ const Login = () => {
                 <input type='submit' value='Anmelden' onClick={handleClick}/>
             </div>
         </form>
-        <div>
+        <div className='link-pw'>
             <a href="#">Passwort vergessen?</a>
         </div>
         </div>
