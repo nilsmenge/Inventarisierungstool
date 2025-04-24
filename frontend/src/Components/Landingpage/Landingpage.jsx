@@ -19,8 +19,6 @@ const Landingpage = () => {
       <img src={logo} alt="" className='logo'/>
       <div className='header-container'>
         <h1>Inventarisierungstool</h1>
-      </div>
-      <div className='btn-container'>
         <button onClick={handleLogin}>Anmelden</button>
       </div>
     </div>
