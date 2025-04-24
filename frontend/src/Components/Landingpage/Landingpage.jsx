@@ -15,7 +15,7 @@ const Landingpage = () => {
 
   return (
     <div className='logo-vid-container'>
-      <video src={vid} className='vid' autoPlay muted loop></video> {/* Video läuft automatisch, stumm und in Schleife */}
+      <video src={vid} className='vid' autoPlay muted loop></video>
       <img src={logo} alt="" className='logo'/>
       <div className='header-container'>
         <h1>Inventarisierungstool</h1>
