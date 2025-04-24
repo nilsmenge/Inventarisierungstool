@@ -40,7 +40,6 @@
     color: #fff;
     font-size: clamp(24px, 5vw, 48px);
     text-align: center;
-    margin-bottom: 10px;
 }
 button{
     position: relative;
