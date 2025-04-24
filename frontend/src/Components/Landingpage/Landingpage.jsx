@@ -17,8 +17,10 @@ const Landingpage = () => {
     <div className='logo-vid-container'>
       <video src={vid} className='vid' autoPlay muted loop></video> {/* Video läuft automatisch, stumm und in Schleife */}
       <img src={logo} alt="" className='logo'/>
-      <div className='text-btn-container'>
+      <div className='header-container'>
         <h1>Inventarisierungstool</h1>
+      </div>
+      <div className='btn-container'>
         <button onClick={handleLogin}>Anmelden</button>
       </div>
     </div>

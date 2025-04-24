@@ -14,8 +14,7 @@ const Login = () => {
         setError(null); // Fehler zurücksetzen
         
         try {
-            // Hier solltest du normalerweise eine tatsächliche Authentifizierung durchführen
-            if (password === '123') {
+            if (password === '') {
                 navigate('/scanner');
             } else {
                 setError('Falsche Anmeldedaten!');

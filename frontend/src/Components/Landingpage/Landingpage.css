@@ -22,7 +22,7 @@
     cursor: pointer;
     z-index: 1;                             /*Stellt sicher, dass das Logo über dem Video liegt*/
 }
-.text-btn-container{
+.header-container{
     position: absolute;
     top: 50%;
     left: 50%;
@@ -36,13 +36,25 @@
     z-index: 1;
     
 }
-.text-btn-container h1{
+.header-container h1{
     color: #fff;
     font-size: clamp(24px, 5vw, 48px);
     text-align: center;
     margin-bottom: 10px;
 }
-button{
+.btn-container{
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 600px;
+    z-index: 1;
+}
+.btn-container button{
     position: relative;
     border-radius: 5px;
     background-color: #009b99;
