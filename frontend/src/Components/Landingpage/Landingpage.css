@@ -41,7 +41,7 @@
     font-size: clamp(24px, 5vw, 48px);
     text-align: center;
 }
-button{
+.btn-login{
     position: relative;
     border-radius: 5px;
     background-color: #009b99;
@@ -54,7 +54,7 @@ button{
     cursor: pointer;
 }
 
-button:hover{
+.btn-login:hover{
     background-color: #008785;
 }
 
