@@ -53,17 +53,6 @@ const Dashboard = () => {
                         <h2 className="modal-title">Neuen Benutzer anlegen</h2>
 
                         <div className="form-group">
-                            <label className="form-label">ID</label>
-                            <input 
-                                type="text"
-                                name="id"
-                                className="form-input"
-                                placeholder="ID eingeben"
-                                required    
-                            />
-                        </div>
-
-                        <div className="form-group">
                             <label className="form-label">Vorname</label>
                             <input 
                                 type="text"
