@@ -60,7 +60,7 @@
     padding-left: 2.5rem;
     padding-right: 1rem;
     border: 1px solid #d1d5db;
-    pointer-events: none;
+/*    pointer-events: none;*/
 }
 
 .table-container{
