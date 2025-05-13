@@ -15,7 +15,7 @@ const Login = () => {
         
         try {
             if (password === '') {
-                navigate('/scanner');
+                navigate('/navigator');
             } else {
                 setError('Falsche Anmeldedaten!');
             }
