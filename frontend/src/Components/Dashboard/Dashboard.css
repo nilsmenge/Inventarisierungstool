@@ -1,0 +1,146 @@
+.dashboard-container{
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.dashboard-content{
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.dashboard-card{
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+}
+
+.dashboard-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.dashboard-title{
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.btn{
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+#btn-blue{
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+}
+
+#btn-blue:hover{
+    background-color: #1d4ed8;
+    cursor: pointer;
+}
+
+.search-container{
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.search-input{
+    padding: 0.5rem 1rem;
+    padding-left: 2.5rem;
+    padding-right: 1rem;
+    border: 1px solid #d1d5db;
+/*    pointer-events: none;*/
+}
+
+.table-container{
+    overflow-x: auto;
+}
+
+.table{
+    min-width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead{
+    background-color: #f9fafb;
+}
+
+.table th{
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform:  uppercase;
+    letter-spacing: 0.05em;
+    color: #6d7280;
+}
+
+.modal-overlay{
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal{
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 28rem;
+}
+
+.modal-title{
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.form-group{
+    margin-bottom: 1rem;
+}
+
+.form-label{
+    display: block;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-select{
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.modal-footer{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.modal-footer .btn:not(:last-child){
+    margin-right: 0.5rem;
+}
+
+#btn-cancel{
+    cursor: pointer;
+    border: none;
+}
