@@ -1,0 +1,170 @@
+.asset-manager-container{
+    background-color: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+}
+
+.sidebar{
+    width: 15rem;
+    background-color: white;
+    border-right: 1px solid #edf2f7;
+    min-height: 100vh;
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+}
+
+.nav-menu{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.nav-item{
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    color: #4a5568;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-item:hover{
+    background-color: #f7f9fc;
+    color: #2563eb;
+}
+
+.nav-item.active{
+    background-color: #f7f9fc;
+    color: #2563eb;
+    font-weight: 600;
+}
+
+
+/* Main content area */
+.main-content{
+    flex-grow: 1;
+    padding: 1rem 2rem;
+}
+
+.content-wrapper{
+    max-width: 87.5rem;
+    margin: 0 auto;
+}
+
+.content-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding: 1rem 0;
+}
+
+.page-title{
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0; /* Verhindert Standard-Margins für h1 */
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.header-actions{
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 40px; /* Einheitliche Höhe für alle Elemente */
+}
+
+/* Gemeinsame Stile für interaktive Elemente */
+.search-input,
+.select-option {
+    height: 40px;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.search-container{
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.search-input{
+    padding: 0 1rem;
+    border: 1px solid #e2e8f0;
+    width: 15rem;
+    height: 40px;
+    display: block;
+}
+
+.search-input:focus{
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.75px rgba(37, 99, 235, 1);
+}
+
+.dropdown{
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.select-option{
+    display: block;
+    background-color: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    padding: 0 1rem;
+    cursor: pointer;
+    height: 40px;
+    appearance: auto;
+}
+
+.btn-default,
+.btn-newasset {
+    height: 40px;
+    min-height: 40px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 0 1rem;
+    cursor: pointer;
+}
+
+.btn-default{
+    background-color: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.btn-default:hover{
+    background-color: #f7f9fc;
+    border-color: #cbd5e0;
+}
+
+.btn-newasset{
+    background-color: #2563eb;
+    color: white;
+    border: none;
+}
+
+.btn-newasset:hover{
+    background-color: #1d4ed8;
+}

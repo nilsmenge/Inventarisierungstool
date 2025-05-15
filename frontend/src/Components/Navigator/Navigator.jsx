@@ -11,7 +11,7 @@ const Navigator = () => {
     navigate('/scanner')
   }
   const handleInventory = () => {
-    navigate('/inventory')
+    navigate('/asset')
   }
 
   return (
