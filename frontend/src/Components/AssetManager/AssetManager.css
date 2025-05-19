@@ -1,10 +1,10 @@
 .asset-manager-container{
     background-color: #f3f4f6;
     min-height: 100vh;
+    height: 100vh;
     display: flex;
     line-height: 1.5;
-    margin: 0;
-    padding: 0;
+    width: 100%;
 }
 
 .sideb{
@@ -54,7 +54,8 @@
 }
 
 .content-wrapper{
-    max-width: 87.5rem;
+/*    max-width: 87.5rem;*/
+    width: 100%;
     margin: 0;
 }
 
@@ -169,6 +170,7 @@
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     overflow: hidden;
+    flex: 1;
 }
 
 .asset-tab{
@@ -183,7 +185,7 @@
 
 .asset-tab th{
     padding: 1rem;
-    text-align: lefts;
+    text-align: left;
     font-weight: 600;
     color: #4a5568;
     font-size: 0.875rem;
