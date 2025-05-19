@@ -1,5 +1,94 @@
 .navigator-container{
     background-color: #f3f4f6;
     min-height: 100vh;
-    padding: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.navigator-content{
+    max-width: 32rem;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.navigator-header{
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.navigator-title{
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 0.5rem;
+}
+
+.navigator-suntitle{
+    font-size: 1rem;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+.n-btns{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.navigator-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    min-height: 3rem;
+}
+
+.navigator-button:hover{
+    background-color: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 253, 0.3);
+}
+
+.navigator-button:active{
+    transform: translateY(0);
+}
+
+.navigator-button.secondary{
+    background-color: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+}
+
+.navigator-button.navigator-button.secondary:hover{
+    background-color: #f7f9fc;
+    border-color: #cbd5e0;
+    color: #2563eb;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .n-btns{
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .navigator-button{
+        flex: 1;
+        min-width: 200px;
+        max-width: 250px;
+    }
 }
