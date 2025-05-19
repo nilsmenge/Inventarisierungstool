@@ -9,7 +9,7 @@ const AssetManager = () => {
   return (
     <div className='asset-manager-container'>
         {/*Sidebar*/}
-        <div className='sidebar'>
+        <div className='sideb'>
             <nav className='nav-menu'>
                 {menuItems.map((item, idx) => (
                   <a
@@ -28,16 +28,16 @@ const AssetManager = () => {
         <div className='main-content'>
             <div className='content-wrapper'>
                 <div className='content-header'>
-                    <h1 className='page-title'>Assets</h1>
+                    <h1 className='asset-title'>Assets</h1>
                     <div className='header-actions'>
-                        <div className='search-container'>
+                        <div className='search-con'>
                             <input 
                                 type="text" 
                                 placeholder='Suche...'
-                                className='search-input' 
+                                className='search-inp' 
                             />
                         </div>
-                        <div className='dropdown'>
+                        <div className='dropd'>
                             <select className='select-option'>
                                 <option value="Neueste zuerst">Neueste zuerst</option>
                                 <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
@@ -48,6 +48,22 @@ const AssetManager = () => {
                         <button className='btn-default'>Filter</button>
                         <button className='btn-newasset'>Neues Asset</button>
                     </div>
+                </div>
+
+                <div className='table-con'>
+                    <table className='asset-tab'>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Name</th>
+                                <th>Zugewiesen</th>
+                                <th>Kosten</th>
+                                <th>Status</th>
+                                <th>Kategorie</th>
+                                <th className='action-col'>Aktionen</th>
+                            </tr>
+                        </thead>
+                    </table>
                 </div>
             </div>
         </div>

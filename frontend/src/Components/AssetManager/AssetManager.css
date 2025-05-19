@@ -2,9 +2,12 @@
     background-color: #f3f4f6;
     min-height: 100vh;
     display: flex;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
 }
 
-.sidebar{
+.sideb{
     width: 15rem;
     background-color: white;
     border-right: 1px solid #edf2f7;
@@ -44,8 +47,7 @@
     font-weight: 600;
 }
 
-
-/* Main content area */
+/* Main Content */
 .main-content{
     flex-grow: 1;
     padding: 1rem 2rem;
@@ -53,7 +55,7 @@
 
 .content-wrapper{
     max-width: 87.5rem;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .content-header{
@@ -64,94 +66,50 @@
     padding: 1rem 0;
 }
 
-.page-title{
+.asset-title{
     font-size: 1.75rem;
     font-weight: 700;
     color: #1a202c;
-    margin: 0; /* Verhindert Standard-Margins für h1 */
-    height: 40px;
-    display: flex;
-    align-items: center;
 }
 
 .header-actions{
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    height: 40px; /* Einheitliche Höhe für alle Elemente */
 }
 
-/* Gemeinsame Stile für interaktive Elemente */
-.search-input,
-.select-option {
-    height: 40px;
-    box-sizing: border-box;
+.search-con{
+     position: relative;
+}
+
+.search-inp{
+    padding: 0.5rem 1rem 0.5rem 2.5rem;
+    border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
     font-size: 0.875rem;
-    font-weight: 500;
+    width: 15rem;
     transition: all 0.2s ease;
 }
 
-.search-container{
-    position: relative;
-    height: 40px;
-    display: flex;
-    align-items: center;
-}
-
-.search-input{
-    padding: 0 1rem;
-    border: 1px solid #e2e8f0;
-    width: 15rem;
-    height: 40px;
-    display: block;
-}
-
-.search-input:focus{
+.search-inp:focus{
     outline: none;
     border-color: #2563eb;
     box-shadow: 0 0 0 0.75px rgba(37, 99, 235, 1);
 }
 
-.dropdown{
-    position: relative;
-    height: 40px;
+.btn-default{
     display: flex;
     align-items: center;
-}
-
-.select-option{
-    display: block;
+    gap: 0.5rem;
     background-color: white;
     color: #4a5568;
     border: 1px solid #e2e8f0;
-    padding: 0 1rem;
-    cursor: pointer;
-    height: 40px;
-    appearance: auto;
-}
-
-.btn-default,
-.btn-newasset {
-    height: 40px;
-    min-height: 40px;
-    line-height: 1;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    box-sizing: border-box;
     border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
-    transition: all 0.2s ease;
-    padding: 0 1rem;
     cursor: pointer;
-}
-
-.btn-default{
-    background-color: white;
-    color: #4a5568;
-    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
 }
 
 .btn-default:hover{
@@ -160,11 +118,73 @@
 }
 
 .btn-newasset{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     background-color: #2563eb;
     color: white;
     border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-newasset:hover{
     background-color: #1d4ed8;
+}
+
+.dropd{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: white;
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.select-option{
+    border: none;
+    width: 100%;
+    cursor: pointer;
+}
+
+.select-option:focus{
+    outline: none;
+}
+
+
+
+/* Tabelle */
+.table-con{
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.asset-tab{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.asset-tab thead{
+    background-color: #f7f9fc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.asset-tab th{
+    padding: 1rem;
+    text-align: lefts;
+    font-weight: 600;
+    color: #4a5568;
+    font-size: 0.875rem;
 }

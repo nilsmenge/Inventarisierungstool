@@ -20,7 +20,7 @@ const App = () => {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/navigator' element={<Navigator />} />
         <Route path='/inventory' element={<Inventory />} />
-        <Route path='/asset' element={<AssetManager />} />
+        <Route path='/assets' element={<AssetManager />} />
       </Routes>
     </div>
     </BrowserRouter>

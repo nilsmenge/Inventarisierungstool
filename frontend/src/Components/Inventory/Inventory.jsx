@@ -270,7 +270,7 @@ export default function AssetManagement() {
           <span className="brand-logo">sortful</span>
         </div>
 
-        <nav className="nav-menu">
+        <nav className="nav-menus">
           <a href="#" className="nav-items">
             <svg xmlns="http://www.w3.org/2000/svg" className="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6z" />

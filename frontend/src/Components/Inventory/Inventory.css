@@ -81,7 +81,7 @@ body {
   -webkit-text-fill-color: transparent;
 }
 
-.nav-menu {
+.nav-menus {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
