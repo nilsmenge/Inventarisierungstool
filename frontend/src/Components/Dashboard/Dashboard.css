@@ -60,7 +60,14 @@
     padding-left: 2.5rem;
     padding-right: 1rem;
     border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
 /*    pointer-events: none;*/
+}
+
+.search-input:focus{
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.75px rgba(37, 99, 235, 1);
 }
 
 .table-container{
