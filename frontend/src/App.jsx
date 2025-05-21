@@ -7,6 +7,7 @@ import Login from './Components/Login/Login'
 import Dashboard from './Components/Dashboard/Dashboard'
 import Navigator from './Components/Navigator/Navigator'
 import Inventory from './Components/Inventory/Inventory'
+import AssetManager from './Components/AssetManager/AssetManager'
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/navigator' element={<Navigator />} />
         <Route path='/inventory' element={<Inventory />} />
+        <Route path='/assets' element={<AssetManager />} />
       </Routes>
     </div>
     </BrowserRouter>

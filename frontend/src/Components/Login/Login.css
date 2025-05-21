@@ -52,15 +52,16 @@
     box-sizing: border-box;
   }
   .input-group input:focus{
-    border-color: #009b99;
     outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 0.75px rgba(37, 99, 235, 1);
   }
   .button{
     margin-top: 5%;
     margin-bottom: 5%;
   }
   .button input{
-    background-color: #009b99;
+    background-color: #2563eb;;
     color: white;
     border: none;
     border-radius: 4px;
@@ -76,5 +77,5 @@
   text-decoration: none;
 }
 .button input:hover{
-  background-color: #008785;
+  background-color: #1d4ed8;
 }
