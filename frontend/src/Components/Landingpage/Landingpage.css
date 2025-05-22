@@ -12,7 +12,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    filter: brightness(90%);
+    filter: brightness(70%);
 }
 .logo{
     width: clamp(50px, 5vw, 70px);
@@ -21,6 +21,10 @@
     left: 5%;
     cursor: pointer;
     z-index: 1;                             /*Stellt sicher, dass das Logo über dem Video liegt*/
+    transition: all 0.3s ease;
+}
+.logo:hover{
+    transform: scale(1.05);
 }
 .header-container{
     position: absolute;
@@ -34,28 +38,49 @@
     width: 90%;
     max-width: 600px;
     z-index: 1;
+    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+    padding: 40px 30px;
+    box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.3);
     
 }
 .header-container h1{
     color: #fff;
     font-size: clamp(24px, 5vw, 48px);
     text-align: center;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    letter-spacing: 1px;
 }
 .btn-login{
     position: relative;
-    border-radius: 5px;
-    background-color: #009b99;
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
-    border-color: transparent;
-    width: clamp(150px, 50%, 300px);
-    padding: 5px 5px;
-    margin: 5px;
-    font-size: clamp(14px, 2vw, 17px);
+    border: none;
+    width: clamp(180px, 60%, 320px);
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .btn-login:hover{
-    background-color: #008785;
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+.btn-login:active{
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.3);
 }
 
 @media (max-width: 768px) {
