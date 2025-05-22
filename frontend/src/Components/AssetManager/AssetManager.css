@@ -190,3 +190,75 @@
     color: #4a5568;
     font-size: 0.875rem;
 }
+
+/*Modal*/
+
+.asset-modal-overlay{
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.asset-modal{
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 28rem;
+}
+
+.asset-modal-title{
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.asset-form-group{
+    margin-bottom: 1rem;
+}
+
+.form-input,
+.form-select{
+    border: 1px solid #d1d5db;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+}
+
+.asset-modal-footer{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.asset-btn{
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.asset-modal-footer .asset-btn:not(:last-child){
+    margin-right: 0.5rem;
+}
+
+#asset-btn-save{
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+}
+
+#asset-btn-save:hover{
+    background-color: #1d4ed8;
+    cursor: pointer;
+}
+
+#dash-btn-cancel{
+    cursor: pointer;
+    border: none;
+}

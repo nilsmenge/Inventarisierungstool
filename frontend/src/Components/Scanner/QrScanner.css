@@ -213,12 +213,13 @@
 }
 
 .scan-button {
-  background-color: #009b99;
+  background-color: #2563eb;
   color: white;
 }
 
 .scan-button:hover {
-  background-color: #008785;
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 12px rgba(37, 99, 253, 0.3);
 }
 
 .stop-button {

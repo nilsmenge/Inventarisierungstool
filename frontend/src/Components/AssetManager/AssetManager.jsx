@@ -3,6 +3,7 @@ import './AssetManager.css'
 
 const AssetManager = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   const menuItems = ['Assets', 'Dashboard'];
 
@@ -46,7 +47,12 @@ const AssetManager = () => {
                         </div>
                         <button className='btn-default'>Scan</button>
                         <button className='btn-default'>Filter</button>
-                        <button className='btn-newasset'>Neues Asset</button>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            className='btn-newasset'
+                        >
+                            Neues Asset
+                        </button>
                     </div>
                 </div>
 
@@ -67,6 +73,88 @@ const AssetManager = () => {
                 </div>
             </div>
         </div>
+
+        {isModalOpen && (
+            <div className='asset-modal-overlay'>
+                <div className='asset-modal'>
+                    <h2 className='asset-modal-title'>Neues Asset anlegen</h2>
+
+                    <div className="asset-form-group">
+                            <label className="form-label">Name</label>
+                            <input 
+                                type="text"
+                                name="name"
+                                className="form-input"
+                                placeholder="Name eingeben"
+                                required    
+                            />
+                    </div>
+
+                    <div className="asset-form-group">
+                            <label className="form-label">Zugewiesen</label>
+                            <input 
+                                type="text"
+                                name="zugewiesen"
+                                className="form-input"
+                                placeholder="Zugewiesen von"
+                                required    
+                            />
+                    </div>
+
+                    <div className="asset-form-group">
+                            <label className="form-label">Kosten</label>
+                            <input 
+                                type="text"
+                                name="kosten"
+                                className="form-input"
+                                placeholder="Kosten eingeben"
+                                required    
+                            />
+                    </div>
+
+                    <div className="asset-form-group">
+                            <label className="form-label">Status</label>
+                            <select 
+                                name="status"
+                                className="form-select"
+                            >
+                                <option value="Admin">Aktiv</option>
+                                <option value="Moderator">Inaktiv</option>
+                            </select>
+                    </div>
+
+                    <div className="asset-form-group">
+                            <label className="form-label">Kategorie</label>
+                            <select 
+                                name="status"
+                                className="form-select"
+                            >
+                                <option value="Admin">Laptop</option>
+                                <option value="Moderator">Handy</option>
+                                <option value="Moderator">Tablet</option>
+                                <option value="Moderator">Bildschirm</option>
+                                <option value="Moderator">PC</option>
+                            </select>
+                    </div>
+
+                    <div className='asset-modal-footer'>
+                        <button
+                            onClick={() => setIsModalOpen(false)}
+                            className='asset-btn'
+                            id='dash-btn-cancel'
+                        >
+                            Abbrechen
+                        </button>
+                        <button
+                                className='asset-btn'
+                                id='asset-btn-save'
+                            >
+                                Speichern
+                            </button>
+                    </div>
+                </div>
+            </div>           
+        )}
     </div>
   )
 }

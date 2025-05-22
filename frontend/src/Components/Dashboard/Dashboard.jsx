@@ -48,9 +48,9 @@ const Dashboard = () => {
             </div>
 
             {isModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2 className="modal-title">Neuen Benutzer anlegen</h2>
+                <div className="dash-modal-overlay">
+                    <div className="dash-modal">
+                        <h2 className="dash-modal-title">Neuen Benutzer anlegen</h2>
 
                         <div className="form-group">
                             <label className="form-label">Vorname</label>
@@ -97,7 +97,7 @@ const Dashboard = () => {
                             </select>
                         </div>
 
-                        <div className="modal-footer">
+                        <div className="dash-modal-footer">
                             <button 
                                 onClick={() => setIsModalOpen(false)}
                                 className="btn"
