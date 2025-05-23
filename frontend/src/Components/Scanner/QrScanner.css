@@ -1,8 +1,12 @@
 .qr-scanner-container {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
+  min-height: 100vh;
+  padding: 1.5rem;
   font-family: Arial, sans-serif;
+}
+
+.qr-scanner-content{
+  max-width: 30rem;
+  margin: 0 auto;
 }
 
 .qr-scanner-container h2{

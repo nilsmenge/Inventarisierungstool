@@ -67,6 +67,26 @@
     padding: 1rem 0;
 }
 
+.header-left{
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+#btn-back{
+    margin-bottom: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+#btn-back:hover{
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+}
+
 .asset-title{
     font-size: 1.75rem;
     font-weight: 700;
