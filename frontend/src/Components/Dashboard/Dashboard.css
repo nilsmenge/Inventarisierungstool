@@ -17,6 +17,20 @@
     padding: 1.5rem;
 }
 
+#btn-back{
+    margin-bottom: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+#btn-back:hover{
+    background-color: #e5e7eb;
+    border-radius: 0.25rem;
+}
+
 .dashboard-header{
     display: flex;
     justify-content: space-between;
@@ -94,7 +108,7 @@
     color: #6d7280;
 }
 
-.modal-overlay{
+.dash-modal-overlay{
     position: fixed;
     inset: 0;
     background-color: rgba(0, 0, 0, 0.5);
@@ -103,7 +117,7 @@
     justify-content: center;
 }
 
-.modal{
+.dash-modal{
     background-color: #ffffff;
     border-radius: 0.5rem;
     padding: 1.5rem;
@@ -137,13 +151,13 @@
     width: 100%;
 }
 
-.modal-footer{
+.dash-modal-footer{
     display: flex;
     justify-content: flex-end;
     margin-top: 1.5rem;
 }
 
-.modal-footer .btn:not(:last-child){
+.dash-modal-footer .btn:not(:last-child){
     margin-right: 0.5rem;
 }
 
