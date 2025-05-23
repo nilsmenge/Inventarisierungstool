@@ -22,19 +22,17 @@ const AssetManager = () => {
     fetchAssets();
   }, []);
 
-  const fetchAssets = async () =>{
-    try{
+  const fetchAssets = async () => {
+    try {
       const response = await fetch("http://127.0.0.1:8000/api/assets/");
       const data = await response.json();
-      console.log(data);
-    }catch (err){
-      console.log(err)
+      setAssets(data);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
 
   const menuItems = ["Assets", "Dashboard"];
-
-
 
   return (
     <div className="asset-manager-container">
@@ -85,10 +83,7 @@ const AssetManager = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
-              <button className="btn-default"
-              >
-                Scan
-              </button>
+              <button className="btn-default">Scan</button>
               <button className="btn-default">Filter</button>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -103,15 +98,23 @@ const AssetManager = () => {
             <table className="asset-tab">
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>Zugewiesen</th>
-                  <th>Kosten</th>
-                  <th>Status</th>
+                  <th>ID</th>
+                  <th>Seriennummer</th>
+                  <th>Gerätename</th>
                   <th>Kategorie</th>
                   <th className="action-col">Aktionen</th>
                 </tr>
               </thead>
+              <tbody>
+                {assets.map((asset) => (
+                  <tr key={asset.id}>
+                    <td>{asset.id}</td>
+                    <td>{asset.serial_no}</td>
+                    <td>{asset.device_name}</td>
+                    <td>{asset.category}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -155,7 +158,7 @@ const AssetManager = () => {
               />
             </div>
 
-{/*            <div className="asset-form-group">
+            {/*            <div className="asset-form-group">
               <label className="form-label">Status</label>
               <select name="status" className="form-select">
                 <option value="Admin">Aktiv</option>
