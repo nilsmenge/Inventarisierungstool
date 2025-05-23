@@ -32,7 +32,7 @@ const Navigator = () => {
 
             <button className="navigator-button secondary" onClick={handleDashboard}>
               <BarChart3 size={20} />
-              Dashboard
+              Admin
             </button>
 
             <button className="navigator-button secondary" onClick={handleInventory}>

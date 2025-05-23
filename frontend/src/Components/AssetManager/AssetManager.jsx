@@ -68,7 +68,10 @@ const AssetManager = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
-              <button className="btn-default">Scan</button>
+              <button className="btn-default"
+              >
+                Scan
+              </button>
               <button className="btn-default">Filter</button>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -103,7 +106,7 @@ const AssetManager = () => {
             <h2 className="asset-modal-title">Neues Asset anlegen</h2>
 
             <div className="asset-form-group">
-              <label className="form-label">Name</label>
+              <label className="form-label">ID</label>
               <input
                 type="text"
                 name="name"
@@ -114,7 +117,7 @@ const AssetManager = () => {
             </div>
 
             <div className="asset-form-group">
-              <label className="form-label">Zugewiesen</label>
+              <label className="form-label">Seriennummer</label>
               <input
                 type="text"
                 name="zugewiesen"
@@ -125,7 +128,7 @@ const AssetManager = () => {
             </div>
 
             <div className="asset-form-group">
-              <label className="form-label">Kosten</label>
+              <label className="form-label">Gerätename</label>
               <input
                 type="text"
                 name="kosten"
@@ -135,13 +138,13 @@ const AssetManager = () => {
               />
             </div>
 
-            <div className="asset-form-group">
+{/*            <div className="asset-form-group">
               <label className="form-label">Status</label>
               <select name="status" className="form-select">
                 <option value="Admin">Aktiv</option>
                 <option value="Moderator">Inaktiv</option>
               </select>
-            </div>
+            </div> */}
 
             <div className="asset-form-group">
               <label className="form-label">Kategorie</label>
