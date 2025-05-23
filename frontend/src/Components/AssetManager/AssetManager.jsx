@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./AssetManager.css";
 import {
@@ -16,8 +16,25 @@ const AssetManager = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [assets, setAssets] = useState([]);
+
+  useEffect(() => {
+    fetchAssets();
+  }, []);
+
+  const fetchAssets = async () =>{
+    try{
+      const response = await fetch("http://127.0.0.1:8000/api/assets/");
+      const data = await response.json();
+      console.log(data);
+    }catch (err){
+      console.log(err)
+    }
+  }
 
   const menuItems = ["Assets", "Dashboard"];
+
+
 
   return (
     <div className="asset-manager-container">
