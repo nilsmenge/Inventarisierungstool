@@ -345,7 +345,7 @@ const EnhancedQrScanner = () => {
         <div className="scanner-header">
           <button
             className="back-button"
-            onClick={() => navigate("/asset-manager")}
+            onClick={() => navigate("/navigator")}
             aria-label="Zurück"
           >
             <ArrowLeft size={24} />
