@@ -17,24 +17,88 @@ const AssetManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [assets, setAssets] = useState([]);
+  const [formData, setFormData] = useState({
+    serial_no: "",
+    device_name: "",
+    category: "Laptop",
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchAssets();
   }, []);
 
-  const fetchAssets = async () =>{
-    try{
+  const fetchAssets = async () => {
+    try {
       const response = await fetch("http://127.0.0.1:8000/api/assets/");
       const data = await response.json();
-      console.log(data);
-    }catch (err){
-      console.log(err)
+      setAssets(data);
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    };
+
+    const handleCreateAsset = async (e) => {
+      e.preventDefault();
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:8000/api/assets/create/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+        if (response.ok) {
+          // Asset created successfully
+          const newAsset = await response.json();
+          //Asset zur Liste hinzufügen
+          setAssets((prevData) => [...prevData, newAsset]);
+
+          //Modal schließen und Formular zurücksetzen
+          setIsModalOpen(false);
+          setFormData({
+            serial_no: "",
+            device_name: "",
+            category: "Laptop",
+          });
+
+          console.log("Asset erfolgreich erstellt:", newAsset);
+        } else {
+          const errorData = await response.json();
+          console.error("Fehler beim Erstellen des Assets:", errorData);
+        }
+      } catch (error) {
+        console.error("Netzwerkfehler:", error);
+        alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+{/*  };             */}
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      serial_no: "",
+      device_name: "",
+      category: "Laptop",
+    });
+  };
 
   const menuItems = ["Assets", "Dashboard"];
-
-
 
   return (
     <div className="asset-manager-container">
@@ -85,10 +149,7 @@ const AssetManager = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
-              <button className="btn-default"
-              >
-                Scan
-              </button>
+              <button className="btn-default">Scan</button>
               <button className="btn-default">Filter</button>
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -103,15 +164,23 @@ const AssetManager = () => {
             <table className="asset-tab">
               <thead>
                 <tr>
-                  <th></th>
-                  <th>Name</th>
-                  <th>Zugewiesen</th>
-                  <th>Kosten</th>
-                  <th>Status</th>
+                  <th>ID</th>
+                  <th>Seriennummer</th>
+                  <th>Gerätename</th>
                   <th>Kategorie</th>
                   <th className="action-col">Aktionen</th>
                 </tr>
               </thead>
+              <tbody>
+                {assets.map((asset) => (
+                  <tr key={asset.id}>
+                    <td>{asset.id}</td>
+                    <td>{asset.serial_no}</td>
+                    <td>{asset.device_name}</td>
+                    <td>{asset.category}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -120,42 +189,36 @@ const AssetManager = () => {
       {isModalOpen && (
         <div className="asset-modal-overlay">
           <div className="asset-modal">
-            <h2 className="asset-modal-title">Neues Asset anlegen</h2>
+            <form onSubmit={handleCreateAsset}>
+              <h2 className="asset-modal-title">Neues Asset anlegen</h2>
 
-            <div className="asset-form-group">
-              <label className="form-label">ID</label>
-              <input
-                type="text"
-                name="name"
-                className="form-input"
-                placeholder="Name eingeben"
-                required
-              />
-            </div>
+              <div className="asset-form-group">
+                <label className="form-label">Seriennummer</label>
+                <input
+                  type="text"
+                  name="serial_no"
+                  value={formData.serial_no}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Seriennummer eingeben"
+                  required
+                />
+              </div>
 
-            <div className="asset-form-group">
-              <label className="form-label">Seriennummer</label>
-              <input
-                type="text"
-                name="zugewiesen"
-                className="form-input"
-                placeholder="Zugewiesen von"
-                required
-              />
-            </div>
+              <div className="asset-form-group">
+                <label className="form-label">Gerätename</label>
+                <input
+                  type="text"
+                  name="device_name"
+                  value={formData.device_name}
+                  onChange={handleInputChange}
+                  className="form-input"
+                  placeholder="Kosten eingeben"
+                  required
+                />
+              </div>
 
-            <div className="asset-form-group">
-              <label className="form-label">Gerätename</label>
-              <input
-                type="text"
-                name="kosten"
-                className="form-input"
-                placeholder="Kosten eingeben"
-                required
-              />
-            </div>
-
-{/*            <div className="asset-form-group">
+              {/*            <div className="asset-form-group">
               <label className="form-label">Status</label>
               <select name="status" className="form-select">
                 <option value="Admin">Aktiv</option>
@@ -163,29 +226,42 @@ const AssetManager = () => {
               </select>
             </div> */}
 
-            <div className="asset-form-group">
-              <label className="form-label">Kategorie</label>
-              <select name="status" className="form-select">
-                <option value="Admin">Laptop</option>
-                <option value="Moderator">Handy</option>
-                <option value="Moderator">Tablet</option>
-                <option value="Moderator">Bildschirm</option>
-                <option value="Moderator">PC</option>
-              </select>
-            </div>
+              <div className="asset-form-group">
+                <label className="form-label">Kategorie</label>
+                <select 
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange} 
+                  className="form-select"
+                >
+                  <option value="Laptop">Laptop</option>
+                  <option value="Handy">Handy</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="Bildschirm">Bildschirm</option>
+                  <option value="PC">PC</option>
+                </select>
+              </div>
 
-            <div className="asset-modal-footer">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="asset-btn"
-                id="dash-btn-cancel"
-              >
-                Abbrechen
-              </button>
-              <button className="asset-btn" id="asset-btn-save">
-                Speichern
-              </button>
-            </div>
+              <div className="asset-modal-footer">
+                <button
+                type="button"
+                  onClick={handleCloseModal}
+                  className="asset-btn"
+                  id="dash-btn-cancel"
+                  disabled={isLoading}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="submit" 
+                  className="asset-btn" 
+                  id="asset-btn-save"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Speichern...' : 'Speichern'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
