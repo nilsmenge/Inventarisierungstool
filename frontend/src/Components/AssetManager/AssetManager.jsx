@@ -17,6 +17,9 @@ const AssetManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [assets, setAssets] = useState([]);
+  const handleScan = () => {
+    navigate('/scanner')
+  }
   const [formData, setFormData] = useState({
     serial_no: "",
     device_name: "",
@@ -149,7 +152,12 @@ const AssetManager = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
-              <button className="btn-default">Scan</button>
+              <button 
+                className="btn-default"
+                onClick={handleScan}
+              >
+                Scan
+              </button>
               <button className="btn-default">Filter</button>
               <button
                 onClick={() => setIsModalOpen(true)}
