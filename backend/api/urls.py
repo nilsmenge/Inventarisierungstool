@@ -7,5 +7,5 @@ urlpatterns = [
     path('users/<int:pk>/', user_detail, name='user_detail'),
     path('assets/', get_assets, name='get_assets'),
     path('assets/create/', create_asset, name='create_asset'),
-    path('assets/<int:pk>/', asset_detail, name='asset_detail')
+    path('assets/<int:serial_no>/', asset_detail, name='asset_detail')
 ]
