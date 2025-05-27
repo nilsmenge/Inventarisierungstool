@@ -4,8 +4,8 @@ from .views import get_users, create_user, user_detail, get_assets, create_asset
 urlpatterns = [
     path('users/', get_users, name='get_users'),
     path('users/create/', create_user, name='create_user'),
-    path('users/<int:pk>/', user_detail, name='user_detail'),
+    path('users/<str:email>/', user_detail, name='user_detail'),
     path('assets/', get_assets, name='get_assets'),
     path('assets/create/', create_asset, name='create_asset'),
-    path('assets/<int:serial_no>/', asset_detail, name='asset_detail')
+    path('assets/<str:serial_no>/', asset_detail, name='asset_detail')
 ]
