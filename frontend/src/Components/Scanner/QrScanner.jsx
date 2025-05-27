@@ -7,6 +7,16 @@ import {
   DecodeHintType,
 } from "@zxing/library";
 import "./QrScanner.css";
+import {
+  Icon,
+  Search,
+  Plus,
+  Trash,
+  Edit,
+  Check,
+  X,
+  ArrowLeft,
+} from "lucide-react";
 
 const QrBarcodeScanner = () => {
   const [scanning, setScanning] = useState(false);
@@ -21,6 +31,9 @@ const QrBarcodeScanner = () => {
   const zxingReaderRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const scanIntervalRef = useRef(null); // Neuer Ref für das Scan-Intervall
+  const handleNavigate = () => {
+    navigate('/navigator')
+  }
 
   // ZXing Barcode Reader initialisieren
   useEffect(() => {
