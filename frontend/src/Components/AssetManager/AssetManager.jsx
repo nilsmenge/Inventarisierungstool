@@ -18,7 +18,7 @@ const AssetManager = () => {
   const navigate = useNavigate();
   const [assets, setAssets] = useState([]);
   const handleScan = () => {
-    navigate('/test')
+    navigate('/scanner')
   }
   const [formData, setFormData] = useState({
     serial_no: "",

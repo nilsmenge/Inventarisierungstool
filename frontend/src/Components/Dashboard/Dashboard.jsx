@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Dashboard.css";
 import {
@@ -16,6 +16,21 @@ import {
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+      fetchUsers();
+    }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/users/");
+      const data = await response.json();
+      setUsers(data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div className="dashboard-container">
@@ -51,18 +66,28 @@ const Dashboard = () => {
           </div>
 
           <div className="table-container">
-            <table className="table">
+            <table className="dashboard-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Vorname</th>
                   <th>Nachname</th>
                   <th>E-Mail</th>
-                  <th>Rolle</th>
+                  <th>Abteilung</th>
                   <th>Aktionen</th>
                 </tr>
               </thead>
-              <tbody></tbody>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.first_name}</td>
+                    <td>{user.last_name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.department}</td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           </div>
         </div>
@@ -77,7 +102,7 @@ const Dashboard = () => {
               <label className="form-label">Vorname</label>
               <input
                 type="text"
-                name="vorname"
+                name="first_name"
                 className="form-input"
                 placeholder="Vorname eingeben"
                 required
@@ -88,7 +113,7 @@ const Dashboard = () => {
               <label className="form-label">Nachname</label>
               <input
                 type="text"
-                name="nachname"
+                name="last_name"
                 className="form-input"
                 placeholder="Nachname eingeben"
                 required
@@ -98,7 +123,7 @@ const Dashboard = () => {
             <div className="form-group">
               <label className="form-label">E-Mail</label>
               <input
-                type="text"
+                type="email"
                 name="email"
                 className="form-input"
                 placeholder="E-Mail eingeben"
@@ -107,13 +132,35 @@ const Dashboard = () => {
             </div>
 
             <div className="form-group">
+              <label className="form-label">Abteilung</label>
+              <input
+                type="text"
+                name="department"
+                className="form-input"
+                placeholder="Abteilung angeben"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Passwort</label>
+              <input
+                type="password"
+                name="password"
+                className="form-input"
+                placeholder="Passwort vergeben"
+                required
+              />
+            </div>
+
+{/*            <div className="form-group">
               <label className="form-label">Rolle</label>
               <select name="rolle" className="form-select">
                 <option value="Admin">Admin</option>
                 <option value="Moderator">Moderator</option>
                 <option value="Benutzer">Benutzer</option>
               </select>
-            </div>
+            </div>*/}
 
             <div className="dash-modal-footer">
               <button
