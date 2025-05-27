@@ -1,7 +1,7 @@
 import React from "react"
 import './Navigator.css'
 import { useNavigate } from 'react-router-dom'
-import { BarChart3, QrCode, Package } from 'lucide-react'
+import { BarChart3, QrCode, Package, User } from 'lucide-react'
 
 const Navigator = () => {
   const navigate = useNavigate()
@@ -31,7 +31,7 @@ const Navigator = () => {
             </button>
 
             <button className="navigator-button secondary" onClick={handleDashboard}>
-              <BarChart3 size={20} />
+              <User size={20} />
               Admin
             </button>
 
