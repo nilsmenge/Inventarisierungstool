@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 import "./Dashboard.css";
 import {
   Icon,
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
       fetchUsers();
@@ -30,6 +33,11 @@ const Dashboard = () => {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  // Toggle password visibility
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -85,6 +93,9 @@ const Dashboard = () => {
                     <td>{user.last_name}</td>
                     <td>{user.email}</td>
                     <td>{user.department}</td>
+                    <td>
+                      {/* Hier können Sie Aktions-Buttons hinzufügen */}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -96,7 +107,7 @@ const Dashboard = () => {
       {isModalOpen && (
         <div className="dash-modal-overlay">
           <div className="dash-modal">
-            <h2 className="dash-modal-title">Neuen Benutzer anlegen</h2>
+            <h2 className="modal-title">Neuen Benutzer anlegen</h2>
 
             <div className="form-group">
               <label className="form-label">Vorname</label>
@@ -121,17 +132,6 @@ const Dashboard = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">E-Mail</label>
-              <input
-                type="email"
-                name="email"
-                className="form-input"
-                placeholder="E-Mail eingeben"
-                required
-              />
-            </div>
-
-            <div className="form-group">
               <label className="form-label">Abteilung</label>
               <input
                 type="text"
@@ -143,14 +143,37 @@ const Dashboard = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Passwort</label>
+              <label className="form-label">E-Mail</label>
               <input
-                type="password"
-                name="password"
+                type="email"
+                name="email"
                 className="form-input"
-                placeholder="Passwort vergeben"
+                placeholder="E-Mail eingeben"
                 required
               />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Passwort</label>
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  className="form-input"
+                  placeholder="Passwort vergeben"
+                  required
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={togglePasswordVisibility}
+                  disabled={isLoading}
+                  aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
 {/*            <div className="form-group">
