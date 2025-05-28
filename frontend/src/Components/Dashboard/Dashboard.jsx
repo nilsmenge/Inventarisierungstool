@@ -21,6 +21,14 @@ const Dashboard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const [formData, setFormData] = useState({
+    last_name:"",
+    first_name:"",
+    department:"",
+    email:"",
+    password:"",
+  });
+
   useEffect(() => {
       fetchUsers();
     }, []);
@@ -34,6 +42,69 @@ const Dashboard = () => {
       console.log(err);
     }
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try{
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/users/create/",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      if (response.ok) {
+        // User erfolgreich erstellt
+        const newUser = await response.json();
+        // User zur Liste hinzufügen
+        setUsers((prevData) => [...prevData, newUser]);
+
+        // Modal schließen und Formular zurücksetzen
+        setIsModalOpen(false);
+        setFormData({
+          last_name:"",
+          first_name:"",
+          department:"",
+          email:"",
+          password:"",
+        });
+
+        console.log("User erfolgreich erstellt:", newUser);
+      } else {
+        const errorData = await response.json();
+        console.error("Fehler beim Erstellen des Users:", errorData);   
+      }
+    } catch (error) {
+        console.error("Netzwerkfehler:", error);
+        alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({
+      last_name:"",
+      first_name:"",
+      department:"",
+      email:"",
+      password:"",
+    });
+  }
 
   // Toggle password visibility
   const togglePasswordVisibility = () => {
@@ -108,12 +179,14 @@ const Dashboard = () => {
         <div className="dash-modal-overlay">
           <div className="dash-modal">
             <h2 className="modal-title">Neuen Benutzer anlegen</h2>
-
+            <form onSubmit={handleCreateUser}>
             <div className="form-group">
               <label className="form-label">Vorname</label>
               <input
                 type="text"
                 name="first_name"
+                value={formData.first_name}
+                onChange={handleInputChange}
                 className="form-input"
                 placeholder="Vorname eingeben"
                 required
@@ -125,6 +198,8 @@ const Dashboard = () => {
               <input
                 type="text"
                 name="last_name"
+                value={formData.last_name}
+                onChange={handleInputChange}
                 className="form-input"
                 placeholder="Nachname eingeben"
                 required
@@ -136,6 +211,8 @@ const Dashboard = () => {
               <input
                 type="text"
                 name="department"
+                value={formData.department}
+                onChange={handleInputChange}
                 className="form-input"
                 placeholder="Abteilung angeben"
                 required
@@ -147,6 +224,8 @@ const Dashboard = () => {
               <input
                 type="email"
                 name="email"
+                value={formData.email}
+                onChange={handleInputChange}
                 className="form-input"
                 placeholder="E-Mail eingeben"
                 required
@@ -160,6 +239,8 @@ const Dashboard = () => {
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   name="password"
+                  value={formData.password}
+                onChange={handleInputChange}
                   className="form-input"
                   placeholder="Passwort vergeben"
                   required
@@ -187,16 +268,22 @@ const Dashboard = () => {
 
             <div className="dash-modal-footer">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={handleCloseModal}
                 className="btn"
                 id="btn-cancel"
+                disabled={isLoading}
               >
                 Abbrechen
               </button>
-              <button className="btn" id="btn-blue">
-                Speichern
+              <button 
+                className="btn" 
+                id="btn-blue"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Speichern...' : 'Speichern'}
               </button>
             </div>
+            </form>
           </div>
         </div>
       )}
