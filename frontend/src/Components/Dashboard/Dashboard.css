@@ -50,7 +50,10 @@
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
     font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
     transition: background-color 0.2s;
+    border: none;
 }
 
 #btn-blue{
@@ -235,6 +238,36 @@
 }
 
 #btn-cancel{
-    cursor: pointer;
-    border: none;
+    background-color: #f3f4f6;
+    color: #4b5563;
+    border: 1px solid #d1d5db;
+}
+
+#btn-cancel:hover{
+    background-color: #e5e7eb;
+}
+
+/* Delete Modal Styles */
+.delete-modal{
+    max-width: 24rem;
+}
+
+.delete-confirmation-text{
+    margin-bottom: 1.5rem;
+    color: #374151;
+    line-height: 1.5;
+}
+
+.delete-confirm-btn{
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.delete-confirm-btn:hover{
+    background-color: #b91c1c;
+}
+
+.delete-confirm-btn:disabled{
+    background-color: #9ca3af;
+    cursor: not-allowed;
 }
