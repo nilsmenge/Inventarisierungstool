@@ -23,9 +23,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-xleimq@zseq)4s@)@^b7tsnhz%yfbbyin*%4-(%r@^(%h%5+-#'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+#DEBUG = True
 
-ALLOWED_HOSTS = []
+# This is a list of strings representing the host/domain names that this Django site can serve.
+ALLOWED_HOSTS = [
+    "localhost",
+    "main.d2lll7pho2g9zs.amplifyapp.com",
+    "inventarisierungstool-9a0bf864c2b7.herokuapp.com"
+
+]
 
 
 # Application definition
@@ -44,13 +51,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware'
+    'django.middleware.clickjacking.XFrameOptionsMiddleware'
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -125,14 +132,14 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:8000",
-#     "http://localhost:3000",
-#     "http://https://main.d2lll7pho2g9zs.amplifyapp.com"
-#     "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/"
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:3000",
+    "https://main.d2lll7pho2g9zs.amplifyapp.com",
+    "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com"
+]
 
 # Configure Django App for Heroku.
 import django_on_heroku
