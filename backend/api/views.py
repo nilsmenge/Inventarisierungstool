@@ -86,7 +86,8 @@ def get_assets(request):
 
     #return Response(AssetSerializer({'serial_no': "123456789", 
     #                                'device_name': "test", 
-    #                                'category': "Laptop"}).data)
+    #                                'category': "Laptop",
+    #                                'device_status': "Lager"}).data)
 
 @api_view(['POST'])
 def create_asset(request):

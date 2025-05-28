@@ -19,6 +19,7 @@ class Asset(models.Model):
     serial_no = models.CharField(max_length=100)
     device_name = models.CharField(max_length=100)
     category = models.CharField(max_length=100)
+    device_status = models.CharField(max_length=50, blank=True, null=True)
 
     # Optional field for the asset label
     # lable = models.CharField(max_length=100, blank=True, null=True)
