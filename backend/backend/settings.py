@@ -125,7 +125,12 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
+#CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://https://main.d2lll7pho2g9zs.amplifyapp.com/"
+]
 
 # Configure Django App for Heroku.
 import django_on_heroku
