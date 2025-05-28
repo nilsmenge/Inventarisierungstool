@@ -1,26 +1,3 @@
-# Django/Python
-*.pyc
-__pycache__/
-db.sqlite3
-.env
-*.env
-*.pyo
-*.pyd
-
-# Django static/media
-/staticfiles/
-/media/
-/static/
-/backend/static/
-/backend/media/
-
-# VSCode & OS
-.vscode/
-.DS_Store
-
-# AWS EB
-*.ebextensions/*.log
-
 # Logs
 logs
 *.log
