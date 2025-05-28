@@ -29,7 +29,7 @@ DEBUG = False
 # This is a list of strings representing the host/domain names that this Django site can serve.
 ALLOWED_HOSTS = [
     "localhost",
-    "main.d2lll7pho2g9zs.amplifyapp.com",
+    #"main.d2lll7pho2g9zs.amplifyapp.com",
     "inventarisierungstool-9a0bf864c2b7.herokuapp.com"
 
 ]
@@ -135,10 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
+    #"http://localhost:8000",
     "http://localhost:3000",
     "https://main.d2lll7pho2g9zs.amplifyapp.com",
-    "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com"
+    #"https://inventarisierungstool-9a0bf864c2b7.herokuapp.com"
 ]
 
 # Configure Django App for Heroku.
