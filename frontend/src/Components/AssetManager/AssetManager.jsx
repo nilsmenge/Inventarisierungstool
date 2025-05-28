@@ -48,7 +48,7 @@ const AssetManager = () => {
    */
   const fetchAssets = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assets/");
+      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/");
       const data = await response.json();
       setAssets(data);
     } catch (err) {
@@ -67,8 +67,8 @@ const AssetManager = () => {
     try {
       // URL und HTTP-Methode je nach Aktion (Erstellen/Bearbeiten) bestimmen
       const url = editingAsset 
-        ? `http://127.0.0.1:8000/api/assets/${editingAsset.serial_no}/` // PUT für Update
-        : "http://127.0.0.1:8000/api/assets/create/"; // POST für Erstellung
+        ? `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${editingAsset.serial_no}/` // PUT für Update
+        : "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/create/"; // POST für Erstellung
       
       const method = editingAsset ? "PUT" : "POST";
 
@@ -121,7 +121,7 @@ const AssetManager = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/assets/${assetToDelete.serial_no}/`,
+        `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${assetToDelete.serial_no}/`,
         {
           method: "DELETE",
         }

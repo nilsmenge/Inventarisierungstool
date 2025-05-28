@@ -40,7 +40,7 @@ const Dashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/users/");
+      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/");
       const data = await response.json();
       setUsers(data);
     } catch (err) {
@@ -55,8 +55,8 @@ const Dashboard = () => {
     try {
       // URL und HTTP-Methode je nach Aktion (Erstellen/Bearbeiten) bestimmen
       const url = editingUser
-      ? `http://127.0.0.1:8000/api/users/${editingUser.email}/` // PUT für Update
-      : "http://127.0.0.1:8000/api/users/create/"; // POST für Erstellung
+      ? `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${editingUser.email}/` // PUT für Update
+      : "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/create/"; // POST für Erstellung
 
       const method = editingUser ? "PUT" : "POST";
 
@@ -109,7 +109,7 @@ const Dashboard = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/users/${userToDelete.email}/`,
+        `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${userToDelete.email}/`,
         {
           method: "DELETE",
         }
@@ -201,7 +201,7 @@ const Dashboard = () => {
 
 /*    try{
       const response = await fetch(
-        "http://127.0.0.1:8000/api/users/create/",
+        "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/create/",
         {
           method: "POST",
           headers: {

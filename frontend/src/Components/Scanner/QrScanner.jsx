@@ -102,7 +102,7 @@ const QrBarcodeScanner = () => {
   const fetchAssetBySerial = async (serialNumber) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/assets/${serialNumber}/`);
+      const response = await fetch(`https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${serialNumber}/`);
       
       if (response.ok) {
         // Asset gefunden - Daten anzeigen
@@ -334,7 +334,7 @@ const QrBarcodeScanner = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assets/create/", {
+      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/create/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
