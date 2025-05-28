@@ -24,6 +24,7 @@ const AssetManager = () => {
     serial_no: "",
     device_name: "",
     category: "Laptop",
+    device_status: "Aktiv",
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,6 +77,7 @@ const AssetManager = () => {
             serial_no: "",
             device_name: "",
             category: "Laptop",
+            device_status: "Aktiv",
           });
 
           console.log("Asset erfolgreich erstellt:", newAsset);
@@ -98,6 +100,7 @@ const AssetManager = () => {
       serial_no: "",
       device_name: "",
       category: "Laptop",
+      device_status: "Aktiv",
     });
   };
 
@@ -176,6 +179,7 @@ const AssetManager = () => {
                   <th>Seriennummer</th>
                   <th>Gerätename</th>
                   <th>Kategorie</th>
+                  <th>Status</th>
                   <th className="action-col">Aktionen</th>
                 </tr>
               </thead>
@@ -186,6 +190,7 @@ const AssetManager = () => {
                     <td>{asset.serial_no}</td>
                     <td>{asset.device_name}</td>
                     <td>{asset.category}</td>
+                    <td>{asset.device_status}</td>
                   </tr>
                 ))}
               </tbody>
@@ -247,6 +252,20 @@ const AssetManager = () => {
                   <option value="Tablet">Tablet</option>
                   <option value="Bildschirm">Bildschirm</option>
                   <option value="PC">PC</option>
+                </select>
+              </div>
+
+              <div className="asset-form-group">
+                <label className="form-label">Status</label>
+                <select 
+                  name="device_status"
+                  value={formData.device_status}
+                  onChange={handleInputChange} 
+                  className="form-select"
+                >
+                  <option value="Aktiv">Aktiv</option>
+                  <option value="Im Lager">Im Lager</option>
+                  <option value="Defekt">Defekt</option>
                 </select>
               </div>
 
