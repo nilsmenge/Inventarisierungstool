@@ -2,7 +2,7 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import "./Dashboard.css";
+import "./AdminDashboard.css";
 import {
   Icon,
   Search,
