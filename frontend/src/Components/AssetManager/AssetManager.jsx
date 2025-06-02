@@ -19,7 +19,8 @@ const AssetManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal für Erstellen/Bearbeiten
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
-  const [search, setSearch] = useState(''); 
+  const [search, setSearch] = useState(''); // Suchbegriff für Filterung
+  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption
   
   // Asset-bezogene States
   const [assets, setAssets] = useState([]); // Liste aller Assets
@@ -42,6 +43,46 @@ const AssetManager = () => {
   useEffect(() => {
     fetchAssets();
   }, []);
+
+  // ========== HELPER FUNCTIONS ==========
+  /**
+   * Sortiert und filtert die Assets basierend auf Suchbegriff und Sortierungsoption
+   * @param {Array} assetList - Liste der zu verarbeitenden Assets
+   * @param {string} searchTerm - Suchbegriff für Filterung
+   * @param {string} sortBy - Sortierungsoption
+   * @returns {Array} - Gefilterte und sortierte Asset-Liste
+   */
+  const getFilteredAndSortedAssets = (assetList, searchTerm, sortBy) => {
+    // Schritt 1: Filtern basierend auf Suchbegriff
+    let filteredAssets = assetList.filter((asset) => {
+      // Wenn Suchfeld leer ist, alle Assets anzeigen
+      if (searchTerm === '') return true;
+      
+      // Suche in Seriennummer und Gerätename (case-insensitive)
+      return asset.serial_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             asset.device_name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    // Schritt 2: Sortieren basierend auf ausgewählter Option
+    switch (sortBy) {
+      case 'Alphabetisch A-Z':
+        // Sortierung nach Gerätename aufsteigend (A-Z)
+        return filteredAssets.sort((a, b) => 
+          a.device_name.toLowerCase().localeCompare(b.device_name.toLowerCase())
+        );
+      
+      case 'Alphabetisch Z-A':
+        // Sortierung nach Gerätename absteigend (Z-A)
+        return filteredAssets.sort((a, b) => 
+          b.device_name.toLowerCase().localeCompare(a.device_name.toLowerCase())
+        );
+      
+      case 'Neueste zuerst':
+      default:
+        // Sortierung nach ID aufsteigend (neueste zuerst)
+        return filteredAssets.sort((a, b) => b.id - a.id);
+    }
+  };
 
   // ========== API FUNCTIONS ==========
   /**
@@ -171,6 +212,14 @@ const AssetManager = () => {
   };
 
   /**
+   * Behandelt Änderungen in der Sortierungsauswahl
+   * @param {Event} e - Select Change Event
+   */
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  /**
    * Öffnet das Bearbeitungs-Modal mit vorausgefüllten Daten
    * @param {Object} asset - Das zu bearbeitende Asset
    */
@@ -224,6 +273,9 @@ const AssetManager = () => {
   // ========== RENDER ==========
   const menuItems = ["Assets", "Dashboard"]; // Sidebar-Menüpunkte
 
+  // Gefilterte und sortierte Assets für die Anzeige vorbereiten
+  const displayedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
+
   return (
     <div className="asset-manager-container">
       {/* ========== SIDEBAR ========== */}
@@ -267,14 +319,19 @@ const AssetManager = () => {
                 <input
                   type="text"
                   placeholder="Suche..."
+                  value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="search-inp"
                 />
               </div>
               
-              {/* Sortierung */}
+              {/* Sortierung/Filter Dropdown */}
               <div className="dropd">
-                <select className="select-option">
+                <select 
+                  className="select-option"
+                  value={sortOption}
+                  onChange={handleSortChange}
+                >
                   <option value="Neueste zuerst">Neueste zuerst</option>
                   <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
@@ -312,13 +369,8 @@ const AssetManager = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* Asset-Zeilen dynamisch rendern */}
-                {assets.filter((asset) => {
-                  return search.toLowerCase() === ''
-                  ? asset
-                  : asset.serial_no.includes(search) ||
-                    asset.device_name.toLowerCase().includes(search.toLowerCase())
-                }).map((asset) => (
+                {/* Asset-Zeilen dynamisch rendern mit Filterung und Sortierung */}
+                {displayedAssets.map((asset) => (
                   <tr key={asset.id}>
                     <td>{asset.id}</td>
                     <td>{asset.serial_no}</td>
