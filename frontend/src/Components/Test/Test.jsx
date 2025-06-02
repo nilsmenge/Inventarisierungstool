@@ -1,278 +1,227 @@
-// EnhancedQrScanner.jsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import jsQR from "jsqr";
-import {
-  BrowserMultiFormatReader,
-  BarcodeFormat,
-  DecodeHintType,
-} from "@zxing/library";
 import "./Test.css";
 import {
-  ArrowLeft,
-  X,
+  Icon,
+  Search,
   Plus,
-  AlertCircle,
-  CheckCircle,
+  Trash,
+  Edit,
+  Check,
+  X,
+  ArrowLeft,
+  Menu,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
-const EnhancedQrScanner = () => {
-  const navigate = useNavigate();
-  const [scanning, setScanning] = useState(false);
-  const [preparing, setPreparing] = useState(false);
-  const [countdown, setCountdown] = useState(3);
-  const [result, setResult] = useState("");
-  const [error, setError] = useState(null);
-  const [scanMode, setScanMode] = useState("qr");
+const AssetManager = () => {
+  // ========== STATE MANAGEMENT ==========
+  // Navigation und UI States
+  const [activeIndex, setActiveIndex] = useState(0); // Aktiver Menüpunkt in der Sidebar
+  const [isModalOpen, setIsModalOpen] = useState(false); // Modal für Erstellen/Bearbeiten
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
+  const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
+  const [search, setSearch] = useState(''); // Suchbegriff für Filterung
+  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption
   
-  // Modal states
-  const [isAssetModalOpen, setIsAssetModalOpen] = useState(false);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [assetData, setAssetData] = useState(null);
-  const [scannedSerialNo, setScannedSerialNo] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // Mobile UI States
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar für mobile
+  const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
   
-  // Form data for creating new asset
+  // Asset-bezogene States
+  const [assets, setAssets] = useState([]); // Liste aller Assets
+  const [editingAsset, setEditingAsset] = useState(null); // Aktuell zu bearbeitendes Asset
+  const [assetToDelete, setAssetToDelete] = useState(null); // Asset das gelöscht werden soll
+  
+  // Formular-Daten für Asset-Erstellung/Bearbeitung
   const [formData, setFormData] = useState({
     serial_no: "",
     device_name: "",
     category: "Laptop",
+    device_status: "Aktiv",
   });
 
-  // Refs
-  const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const streamRef = useRef(null);
-  const zxingReaderRef = useRef(null);
-  const countdownTimerRef = useRef(null);
-  const scanIntervalRef = useRef(null);
+  // Navigation Hook
+  const navigate = useNavigate();
 
-  // Initialize ZXing Barcode Reader
+  // ========== LIFECYCLE HOOKS ==========
+  // Assets beim ersten Laden der Komponente abrufen
   useEffect(() => {
-    const hints = new Map();
-    const formats = [
-      BarcodeFormat.CODE_128,
-      BarcodeFormat.CODE_39,
-      BarcodeFormat.EAN_13,
-      BarcodeFormat.EAN_8,
-      BarcodeFormat.UPC_A,
-      BarcodeFormat.UPC_E,
-      BarcodeFormat.QR_CODE,
-    ];
-
-    hints.set(DecodeHintType.POSSIBLE_FORMATS, formats);
-    zxingReaderRef.current = new BrowserMultiFormatReader(hints);
-
-    return () => {
-      if (zxingReaderRef.current) {
-        zxingReaderRef.current.reset();
-      }
-    };
+    fetchAssets();
   }, []);
 
-  // Cleanup on component unmount
+  // Sidebar schließen wenn außerhalb geklickt wird
   useEffect(() => {
-    return () => {
-      stopScanning();
-      if (countdownTimerRef.current) {
-        clearInterval(countdownTimerRef.current);
-      }
-      if (scanIntervalRef.current) {
-        clearInterval(scanIntervalRef.current);
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsSidebarOpen(false);
       }
     };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch asset by serial number
-  const fetchAssetBySerial = async (serialNumber) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${serialNumber}/`);
+  // ========== HELPER FUNCTIONS ==========
+  /**
+   * Sortiert und filtert die Assets basierend auf Suchbegriff und Sortierungsoption
+   * @param {Array} assetList - Liste der zu verarbeitenden Assets
+   * @param {string} searchTerm - Suchbegriff für Filterung
+   * @param {string} sortBy - Sortierungsoption
+   * @returns {Array} - Gefilterte und sortierte Asset-Liste
+   */
+  const getFilteredAndSortedAssets = (assetList, searchTerm, sortBy) => {
+    // Filtern basierend auf Suchbegriff
+    let filteredAssets = assetList.filter((asset) => {
+      // Wenn Suchfeld leer ist, alle Assets anzeigen
+      if (searchTerm === '') return true;
       
-      if (response.ok) {
-        const data = await response.json();
-        setAssetData(data);
-        setIsAssetModalOpen(true);
-      } else if (response.status === 404) {
-        // Asset not found, show create modal
-        setScannedSerialNo(serialNumber);
-        setFormData(prev => ({ ...prev, serial_no: serialNumber }));
-        setIsCreateModalOpen(true);
-      } else {
-        setError(`Fehler beim Abrufen des Assets: ${response.status}`);
-      }
+      // Suche in Seriennummer und Gerätename (case-insensitive)
+      return asset.serial_no.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             asset.device_name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    // Sortieren basierend auf ausgewählter Option
+    switch (sortBy) {
+      case 'Alphabetisch A-Z':
+        // Sortierung nach Gerätename aufsteigend (A-Z)
+        return filteredAssets.sort((a, b) => 
+          a.device_name.toLowerCase().localeCompare(b.device_name.toLowerCase())
+        );
+      
+      case 'Alphabetisch Z-A':
+        // Sortierung nach Gerätename absteigend (Z-A)
+        return filteredAssets.sort((a, b) => 
+          b.device_name.toLowerCase().localeCompare(a.device_name.toLowerCase())
+        );
+      
+      case 'Neueste zuerst':
+      default:
+        // Sortierung nach ID absteigend (neueste zuerst)
+        return filteredAssets.sort((a, b) => a.id - b.id);
+    }
+  };
+
+  // ========== API FUNCTIONS ==========
+  /**
+   * Lädt alle Assets vom Backend
+   */
+  const fetchAssets = async () => {
+    try {
+      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/");
+      const data = await response.json();
+      setAssets(data);
     } catch (err) {
-      setError("Netzwerkfehler beim Abrufen des Assets");
-      console.error(err);
+      console.log("Fehler beim Laden der Assets:", err);
+    }
+  };
+
+  /**
+   * Erstellt ein neues Asset oder aktualisiert ein vorhandenes
+   * @param {Event} e - Form Submit Event
+   */
+  const handleCreateAsset = async (e) => {
+    e.preventDefault(); // Verhindert Standard-Formular-Submit
+    setIsLoading(true);
+
+    try {
+      // URL und HTTP-Methode je nach Aktion (Erstellen/Bearbeiten) bestimmen
+      const url = editingAsset 
+        ? `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${editingAsset.serial_no}/` // PUT für Update
+        : "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/create/"; // POST für Erstellung
+      
+      const method = editingAsset ? "PUT" : "POST";
+
+      // API-Call ausführen
+      const response = await fetch(url, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const assetData = await response.json();
+        
+        if (editingAsset) {
+          // Bei Bearbeitung: Asset in der Liste aktualisieren
+          setAssets((prevAssets) =>
+            prevAssets.map((asset) =>
+              asset.serial_no === editingAsset.serial_no ? assetData : asset
+            )
+          );
+          console.log("Asset erfolgreich bearbeitet:", assetData);
+        } else {
+          // Bei Erstellung: Asset zur Liste hinzufügen
+          setAssets((prevData) => [...prevData, assetData]);
+          console.log("Asset erfolgreich erstellt:", assetData);
+        }
+
+        // Modal schließen und Formular zurücksetzen
+        handleCloseModal();
+      } else {
+        const errorData = await response.json();
+        console.error("Fehler beim Speichern des Assets:", errorData);
+      }
+    } catch (error) {
+      console.error("Netzwerkfehler:", error);
+      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Handle scan result
-  const handleScanResult = (scanResult) => {
-    console.log("Scan-Ergebnis:", scanResult);
-    setResult(scanResult);
-    
-    // Treat scan result as serial number and fetch asset
-    fetchAssetBySerial(scanResult);
-  };
+  /**
+   * Löscht ein Asset permanent
+   */
+  const handleConfirmDelete = async () => {
+    if (!assetToDelete) return;
 
-  const prepareScanner = async () => {
-    setError(null);
-    setResult("");
-    setPreparing(true);
-    setCountdown(3);
-
+    setIsLoading(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        videoRef.current.onloadedmetadata = () => {
-          videoRef.current
-            .play()
-            .then(() => {
-              console.log("Video playback started");
-
-              countdownTimerRef.current = setInterval(() => {
-                setCountdown((prevCount) => {
-                  if (prevCount <= 1) {
-                    clearInterval(countdownTimerRef.current);
-                    startActualScanning();
-                    return 0;
-                  }
-                  return prevCount - 1;
-                });
-              }, 1000);
-            })
-            .catch((err) => {
-              setError("Video konnte nicht abgespielt werden: " + err.message);
-              setPreparing(false);
-            });
-        };
-      } else {
-        throw new Error("Video-Element nicht gefunden");
-      }
-    } catch (err) {
-      setError("Kamera konnte nicht aktiviert werden: " + err.message);
-      setPreparing(false);
-    }
-  };
-
-  const startActualScanning = () => {
-    console.log("Starte das eigentliche Scannen im Modus:", scanMode);
-    setPreparing(false);
-    setScanning(true);
-
-    if (scanMode === "barcode" && zxingReaderRef.current) {
-      try {
-        zxingReaderRef.current.decodeFromConstraints(
-          { video: { facingMode: "environment" } },
-          videoRef.current,
-          (result, error) => {
-            if (result) {
-              console.log("Barcode gefunden:", result.getText());
-              handleScanResult(result.getText());
-              stopScanning();
-            }
-            if (error && !(error instanceof TypeError)) {
-              console.log("ZXing Error (nicht kritisch):", error);
-            }
-          }
-        );
-      } catch (err) {
-        console.error("Fehler beim Starten des Barcode-Scanners:", err);
-        setError("Fehler beim Starten des Barcode-Scanners: " + err.message);
-        stopScanning();
-      }
-    } else {
-      scanIntervalRef.current = setInterval(() => {
-        if (!videoRef.current || !canvasRef.current) return;
-
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-        const context = canvas.getContext("2d", { willReadFrequently: true });
-
-        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          canvas.width = video.videoWidth || 640;
-          canvas.height = video.videoHeight || 480;
-
-          try {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = context.getImageData(
-              0,
-              0,
-              canvas.width,
-              canvas.height
-            );
-
-            console.log("Verarbeite Bild:", imageData.width, "x", imageData.height);
-
-            try {
-              const code = jsQR(
-                imageData.data,
-                imageData.width,
-                imageData.height,
-                {
-                  inversionAttempts: "dontInvert",
-                }
-              );
-
-              if (code) {
-                console.log("QR-Code gefunden:", code.data);
-                handleScanResult(code.data);
-                stopScanning();
-              }
-            } catch (qrErr) {
-              console.error("jsQR Error:", qrErr);
-            }
-          } catch (drawErr) {
-            console.error("Error drawing video to canvas:", drawErr);
-          }
-        } else {
-          console.log("Video not ready yet. readyState:", video.readyState);
+      const response = await fetch(
+        `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${assetToDelete.serial_no}/`,
+        {
+          method: "DELETE",
         }
-      }, 500);
+      );
+
+      if (response.ok) {
+        // Asset aus der lokalen Liste entfernen
+        setAssets((prevAssets) =>
+          prevAssets.filter((asset) => asset.serial_no !== assetToDelete.serial_no)
+        );
+        console.log("Asset erfolgreich gelöscht:", assetToDelete);
+        
+        // Lösch-Modal schließen
+        setIsDeleteModalOpen(false);
+        setAssetToDelete(null);
+      } else {
+        const errorData = await response.json();
+        console.error("Fehler beim Löschen des Assets:", errorData);
+      }
+    } catch (error) {
+      console.error("Netzwerkfehler:", error);
+      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const stopScanning = () => {
-    console.log("Scanning wird gestoppt");
+  // ========== EVENT HANDLERS ==========
+  /**
+   * Navigation zum Scanner
+   */
+  const handleScan = () => {
+    navigate('/scanner')
+  }
 
-    if (countdownTimerRef.current) {
-      clearInterval(countdownTimerRef.current);
-    }
-
-    if (scanIntervalRef.current) {
-      clearInterval(scanIntervalRef.current);
-    }
-
-    if (scanMode === "barcode" && zxingReaderRef.current) {
-      zxingReaderRef.current.reset();
-    }
-
-    if (streamRef.current) {
-      const tracks = streamRef.current.getTracks();
-      tracks.forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
-
-    setScanning(false);
-    setPreparing(false);
-  };
-
-  // Handle form input changes
+  /**
+   * Behandelt Änderungen in Formularfeldern
+   * @param {Event} e - Input Change Event
+   */
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -281,264 +230,456 @@ const EnhancedQrScanner = () => {
     }));
   };
 
-  // Create new asset
-  const handleCreateAsset = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/create/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const newAsset = await response.json();
-        console.log("Asset erfolgreich erstellt:", newAsset);
-        
-        // Show success and close modal
-        setIsCreateModalOpen(false);
-        setAssetData(newAsset);
-        setIsAssetModalOpen(true);
-        
-        // Reset form
-        setFormData({
-          serial_no: "",
-          device_name: "",
-          category: "Laptop",
-        });
-      } else {
-        const errorData = await response.json();
-        console.error("Fehler beim Erstellen des Assets:", errorData);
-        setError("Fehler beim Erstellen des Assets");
-      }
-    } catch (error) {
-      console.error("Netzwerkfehler:", error);
-      setError("Netzwerkfehler beim Erstellen des Assets");
-    } finally {
-      setIsLoading(false);
-    }
+  /**
+   * Behandelt Änderungen in der Sortierungsauswahl
+   * @param {Event} e - Select Change Event
+   */
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
   };
 
-  // Close modals
-  const closeAssetModal = () => {
-    setIsAssetModalOpen(false);
-    setAssetData(null);
+  /**
+   * Öffnet das Bearbeitungs-Modal mit vorausgefüllten Daten
+   * @param {Object} asset - Das zu bearbeitende Asset
+   */
+  const handleEditAsset = (asset) => {
+    setEditingAsset(asset); // Asset für Bearbeitung markieren
+    
+    // Formular mit Asset-Daten füllen
+    setFormData({
+      serial_no: asset.serial_no,
+      device_name: asset.device_name,
+      category: asset.category,
+      device_status: asset.device_status,
+    });
+    
+    setIsModalOpen(true); // Modal öffnen
   };
 
-  const closeCreateModal = () => {
-    setIsCreateModalOpen(false);
-    setScannedSerialNo("");
+  /**
+   * Öffnet das Löschbestätigungs-Modal
+   * @param {Object} asset - Das zu löschende Asset
+   */
+  const handleDeleteClick = (asset) => {
+    setAssetToDelete(asset);
+    setIsDeleteModalOpen(true);
+  };
+
+  /**
+   * Schließt das Erstellen/Bearbeiten-Modal und setzt das Formular zurück
+   */
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingAsset(null); // Bearbeitungsmodus beenden
+    
+    // Formular auf Standardwerte zurücksetzen
     setFormData({
       serial_no: "",
       device_name: "",
       category: "Laptop",
+      device_status: "Aktiv",
     });
   };
 
+  /**
+   * Schließt das Löschbestätigungs-Modal
+   */
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setAssetToDelete(null);
+  };
+
+  // ========== MOBILE SPECIFIC HANDLERS ==========
+  /**
+   * Toggle Sidebar für Mobile
+   */
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  /**
+   * Schließt Sidebar wenn Overlay geklickt wird
+   */
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  /**
+   * Toggle Card Details
+   * @param {number} assetId - ID des Assets
+   */
+  const toggleCardExpansion = (assetId) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(assetId)) {
+      newExpanded.delete(assetId);
+    } else {
+      newExpanded.add(assetId);
+    }
+    setExpandedCards(newExpanded);
+  };
+
+  /**
+   * Verhindert Event Bubbling für Action Buttons
+   * @param {Event} e - Click Event
+   */
+  const handleActionClick = (e, action, asset) => {
+    e.stopPropagation(); // Verhindert Card Toggle
+    
+    if (action === 'edit') {
+      handleEditAsset(asset);
+    } else if (action === 'delete') {
+      handleDeleteClick(asset);
+    }
+  };
+
+  // ========== COMPUTED VALUES ==========
+  // Gefilterte und sortierte Assets für die Anzeige
+  const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
+
+  // Navigation Menu Items
+  const menuItems = [
+    { label: "Dashboard", icon: Icon },
+    { label: "Assets", icon: Icon },
+    { label: "Berichte", icon: Icon },
+    { label: "Einstellungen", icon: Icon },
+  ];
+
+  // ========== RENDER ==========
   return (
-    <div className="enhanced-scanner-container">
-      <div className="enhanced-scanner-content">
-        <div className="scanner-header">
-          <button
-            className="back-button"
-            onClick={() => navigate("/navigator")}
-            aria-label="Zurück"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          <h2>QR/Barcode Asset Scanner</h2>
-        </div>
+    <div className="asset-manager-container">
+      {/* Mobile Burger Menu */}
+      <div 
+        className={`burger-menu ${isSidebarOpen ? 'open' : ''}`}
+        onClick={toggleSidebar}
+      >
+        <div className="burger-line"></div>
+        <div className="burger-line"></div>
+        <div className="burger-line"></div>
+      </div>
 
-        <div className="scanner-mode">
-          <button
-            className={`mode-button ${scanMode === "qr" ? "active" : ""}`}
-            onClick={() => setScanMode("qr")}
-            disabled={scanning || preparing}
-          >
-            QR-Code
-          </button>
-          <button
-            className={`mode-button ${scanMode === "barcode" ? "active" : ""}`}
-            onClick={() => setScanMode("barcode")}
-            disabled={scanning || preparing}
-          >
-            Barcode
-          </button>
-        </div>
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'active' : ''}`}
+        onClick={closeSidebar}
+      ></div>
 
-        <div className="scanner-preview">
-          <video ref={videoRef} className="scanner-video" playsInline />
-          <canvas ref={canvasRef} className="scanner-canvas" />
+      {/* Sidebar */}
+      <div className={`sideb ${isSidebarOpen ? 'open' : ''}`}>
+        <nav className="nav-menu">
+          {menuItems.map((item, index) => (
+            <a
+              key={index}
+              href="#"
+              className={`nav-item ${activeIndex === index ? 'active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveIndex(index);
+                closeSidebar(); // Schließe Sidebar nach Auswahl auf Mobile
+              }}
+            >
+              <item.icon size={20} />
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </div>
 
-          {(scanning || preparing) && (
-            <div className="scanner-overlay">
-              <div className="scanner-corner top-left"></div>
-              <div className="scanner-corner top-right"></div>
-              <div className="scanner-corner bottom-left"></div>
-              <div className="scanner-corner bottom-right"></div>
-              {scanMode === "barcode" && scanning && (
-                <div className="barcode-line"></div>
-              )}
-
-              {preparing && (
-                <div className="countdown-overlay">
-                  <div className="countdown-number">{countdown}</div>
-                </div>
-              )}
+      {/* Main Content */}
+      <div className="main-content">
+        <div className="content-wrapper">
+          {/* Header */}
+          <div className="content-header">
+            <div className="header-left">
+              <button id="btn-back" onClick={() => navigate(-1)}>
+                <ArrowLeft size={20} />
+              </button>
+              <h1 className="asset-title">Asset-Verwaltung</h1>
             </div>
-          )}
 
-          {isLoading && (
-            <div className="loading-overlay">
-              <div className="loading-spinner"></div>
-              <p>Lade Asset-Daten...</p>
+            <div className="header-actions">
+              {/* Search */}
+              <div className="search-con">
+                <Search 
+                  size={16} 
+                  style={{
+                    position: 'absolute',
+                    left: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#9ca3af'
+                  }}
+                />
+                <input
+                  type="text"
+                  placeholder="Suche nach Assets..."
+                  className="search-inp"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
+
+              {/* Sort Dropdown */}
+              <div className="dropd">
+                <select
+                  className="select-option"
+                  value={sortOption}
+                  onChange={handleSortChange}
+                >
+                  <option value="Neueste zuerst">Neueste zuerst</option>
+                  <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
+                  <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
+                </select>
+                <ChevronDown size={16} />
+              </div>
+
+              {/* Scanner Button */}
+              <button className="btn-default" onClick={handleScan}>
+                <Search size={16} />
+                Scanner
+              </button>
+
+              {/* New Asset Button */}
+              <button 
+                className="btn-newasset"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <Plus size={16} />
+                Neues Asset
+              </button>
             </div>
-          )}
-        </div>
-
-        {result && !isAssetModalOpen && !isCreateModalOpen && (
-          <div className="result-container">
-            <h3>Gescannte Seriennummer:</h3>
-            <p className="result-text">{result}</p>
           </div>
-        )}
 
-        {error && <p className="error-message">{error}</p>}
+          {/* Desktop Table View */}
+          <div className="table-con">
+            <table className="asset-tab">
+              <thead>
+                <tr>
+                  <th>Seriennummer</th>
+                  <th>Gerätename</th>
+                  <th>Kategorie</th>
+                  <th>Status</th>
+                  <th className="action-col">Aktionen</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAndSortedAssets.map((asset) => (
+                  <tr key={asset.id}>
+                    <td>{asset.serial_no}</td>
+                    <td>{asset.device_name}</td>
+                    <td>{asset.category}</td>
+                    <td>{asset.device_status}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="action-btn edit-btn"
+                          onClick={() => handleEditAsset(asset)}
+                          title="Bearbeiten"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          onClick={() => handleDeleteClick(asset)}
+                          title="Löschen"
+                        >
+                          <Trash size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-        <div className="button-container">
-          {!scanning && !preparing ? (
-            <button className="scan-button" onClick={prepareScanner}>
-              {scanMode === "qr" ? "QR-Code scannen" : "Barcode scannen"}
-            </button>
-          ) : (
-            <button className="stop-button" onClick={stopScanning}>
-              {preparing ? "Vorbereitung abbrechen" : "Scannen stoppen"}
-            </button>
+          {/* Mobile Card View */}
+          <div className="asset-cards">
+            {filteredAndSortedAssets.map((asset) => (
+              <div 
+                key={asset.id} 
+                className="asset-card"
+                onClick={() => toggleCardExpansion(asset.id)}
+              >
+                <div className="asset-card-header">
+                  <div className="asset-card-title">{asset.device_name}</div>
+                  <div className="asset-card-serial">{asset.serial_no}</div>
+                  <div className="asset-card-actions">
+                    <button
+                      className="action-btn edit-btn"
+                      onClick={(e) => handleActionClick(e, 'edit', asset)}
+                      title="Bearbeiten"
+                    >
+                      <Edit size={12} />
+                    </button>
+                    <button
+                      className="action-btn delete-btn"
+                      onClick={(e) => handleActionClick(e, 'delete', asset)}
+                      title="Löschen"
+                    >
+                      <Trash size={12} />
+                    </button>
+                    {expandedCards.has(asset.id) ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Expanded Details */}
+                <div className={`asset-card-details ${expandedCards.has(asset.id) ? 'expanded' : ''}`}>
+                  <div className="asset-detail-row">
+                    <span className="asset-detail-label">Kategorie:</span>
+                    <span className="asset-detail-value">{asset.category}</span>
+                  </div>
+                  <div className="asset-detail-row">
+                    <span className="asset-detail-label">Status:</span>
+                    <span className="asset-detail-value">{asset.device_status}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Empty State */}
+          {filteredAndSortedAssets.length === 0 && (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '3rem', 
+              color: '#6b7280' 
+            }}>
+              {search ? 'Keine Assets gefunden.' : 'Noch keine Assets vorhanden.'}
+            </div>
           )}
         </div>
       </div>
 
-      {/* Asset Details Modal */}
-      {isAssetModalOpen && assetData && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>Asset Details</h3>
-              <button onClick={closeAssetModal} className="close-button">
-                <X size={20} />
-              </button>
-            </div>
-            <div className="modal-content">
-              <div className="asset-detail">
-                <label>ID:</label>
-                <span>{assetData.id}</span>
-              </div>
-              <div className="asset-detail">
-                <label>Seriennummer:</label>
-                <span>{assetData.serial_no}</span>
-              </div>
-              <div className="asset-detail">
-                <label>Gerätename:</label>
-                <span>{assetData.device_name}</span>
-              </div>
-              <div className="asset-detail">
-                <label>Kategorie:</label>
-                <span>{assetData.category}</span>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button onClick={closeAssetModal} className="btn-secondary">
-                Schließen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Create Asset Modal */}
-      {isCreateModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h3>Asset nicht gefunden</h3>
-              <button onClick={closeCreateModal} className="close-button">
-                <X size={20} />
-              </button>
-            </div>
+      {/* Create/Edit Asset Modal */}
+      {isModalOpen && (
+        <div className="asset-modal-overlay">
+          <div className="asset-modal">
+            <h2 className="asset-modal-title">
+              {editingAsset ? 'Asset bearbeiten' : 'Neues Asset erstellen'}
+            </h2>
+            
             <form onSubmit={handleCreateAsset}>
-              <div className="modal-content">
-                <div className="info-message">
-                  <AlertCircle size={20} />
-                  <p>
-                    Die Seriennummer <strong>{scannedSerialNo}</strong> wurde nicht gefunden.
-                    Möchten Sie ein neues Asset anlegen?
-                  </p>
-                </div>
-                
-                <div className="form-group">
-                  <label>Seriennummer</label>
-                  <input
-                    type="text"
-                    name="serial_no"
-                    value={formData.serial_no}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    readOnly
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Gerätename</label>
-                  <input
-                    type="text"
-                    name="device_name"
-                    value={formData.device_name}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="Gerätename eingeben"
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label>Kategorie</label>
-                  <select
-                    name="category"
-                    value={formData.category}
-                    onChange={handleInputChange}
-                    className="form-select"
-                  >
-                    <option value="Laptop">Laptop</option>
-                    <option value="Handy">Handy</option>
-                    <option value="Tablet">Tablet</option>
-                    <option value="Bildschirm">Bildschirm</option>
-                    <option value="PC">PC</option>
-                  </select>
-                </div>
+              <div className="asset-form-group">
+                <label className="form-label">Seriennummer</label>
+                <input
+                  type="text"
+                  name="serial_no"
+                  className="form-input"
+                  value={formData.serial_no}
+                  onChange={handleInputChange}
+                  disabled={editingAsset !== null} // Seriennummer nicht änderbar bei Bearbeitung
+                  required
+                />
               </div>
-              
-              <div className="modal-footer">
+
+              <div className="asset-form-group">
+                <label className="form-label">Gerätename</label>
+                <input
+                  type="text"
+                  name="device_name"
+                  className="form-input"
+                  value={formData.device_name}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="asset-form-group">
+                <label className="form-label">Kategorie</label>
+                <select
+                  name="category"
+                  className="form-select"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                >
+                  <option value="Laptop">Laptop</option>
+                  <option value="Desktop">Desktop</option>
+                  <option value="Monitor">Monitor</option>
+                  <option value="Drucker">Drucker</option>
+                  <option value="Tablet">Tablet</option>
+                  <option value="Smartphone">Smartphone</option>
+                  <option value="Server">Server</option>
+                  <option value="Netzwerk">Netzwerk</option>
+                  <option value="Sonstiges">Sonstiges</option>
+                </select>
+              </div>
+
+              <div className="asset-form-group">
+                <label className="form-label">Status</label>
+                <select
+                  name="device_status"
+                  className="form-select"
+                  value={formData.device_status}
+                  onChange={handleInputChange}
+                >
+                  <option value="Aktiv">Aktiv</option>
+                  <option value="Inaktiv">Inaktiv</option>
+                  <option value="Wartung">Wartung</option>
+                  <option value="Defekt">Defekt</option>
+                  <option value="Ausgemustert">Ausgemustert</option>
+                </select>
+              </div>
+
+              <div className="asset-modal-footer">
                 <button
                   type="button"
-                  onClick={closeCreateModal}
-                  className="btn-secondary"
+                  id="dash-btn-cancel"
+                  className="asset-btn"
+                  onClick={handleCloseModal}
                   disabled={isLoading}
                 >
                   Abbrechen
                 </button>
                 <button
                   type="submit"
-                  className="btn-primary"
+                  id="asset-btn-save"
+                  className="asset-btn"
                   disabled={isLoading}
                 >
-                  {isLoading ? "Erstelle..." : "Asset erstellen"}
+                  {isLoading ? 'Speichern...' : (editingAsset ? 'Aktualisieren' : 'Erstellen')}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="asset-modal-overlay">
+          <div className="asset-modal delete-modal">
+            <h2 className="asset-modal-title">Asset löschen</h2>
+            
+            <div className="delete-confirmation-text">
+              Sind Sie sicher, dass Sie das Asset <strong>"{assetToDelete?.device_name}"</strong> 
+              {' '}mit der Seriennummer <strong>"{assetToDelete?.serial_no}"</strong> löschen möchten?
+              <br /><br />
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </div>
+
+            <div className="asset-modal-footer">
+              <button
+                type="button"
+                id="dash-btn-cancel"
+                className="asset-btn"
+                onClick={handleCloseDeleteModal}
+                disabled={isLoading}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="button"
+                className="asset-btn delete-confirm-btn"
+                onClick={handleConfirmDelete}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Löschen...' : 'Löschen'}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -546,4 +687,4 @@ const EnhancedQrScanner = () => {
   );
 };
 
-export default EnhancedQrScanner;
+export default AssetManager;
