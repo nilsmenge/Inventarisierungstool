@@ -19,6 +19,7 @@ const AssetManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal für Erstellen/Bearbeiten
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
+  const [search, setSearch] = useState(''); 
   
   // Asset-bezogene States
   const [assets, setAssets] = useState([]); // Liste aller Assets
@@ -266,6 +267,7 @@ const AssetManager = () => {
                 <input
                   type="text"
                   placeholder="Suche..."
+                  onChange={(e) => setSearch(e.target.value)}
                   className="search-inp"
                 />
               </div>
@@ -311,7 +313,12 @@ const AssetManager = () => {
               </thead>
               <tbody>
                 {/* Asset-Zeilen dynamisch rendern */}
-                {assets.map((asset) => (
+                {assets.filter((asset) => {
+                  return search.toLowerCase() === ''
+                  ? asset
+                  : asset.serial_no.includes(search) ||
+                    asset.device_name.toLowerCase().includes(search.toLowerCase())
+                }).map((asset) => (
                   <tr key={asset.id}>
                     <td>{asset.id}</td>
                     <td>{asset.serial_no}</td>
