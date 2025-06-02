@@ -352,7 +352,9 @@ const Dashboard = () => {
       {isModalOpen && (
         <div className="dash-modal-overlay">
           <div className="dash-modal">
-            <h2 className="modal-title">Neuen Benutzer anlegen</h2>
+            <h2 className="modal-title">
+              {editingUser ? "User bearbeiten" : "Neuen Benutzer anlegen"}
+            </h2>
             <form onSubmit={handleCreateUser}>
             <div className="form-group">
               <label className="form-label">Vorname</label>
