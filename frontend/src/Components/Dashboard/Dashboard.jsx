@@ -272,6 +272,13 @@ const Dashboard = () => {
               </button>
               <h1 className="dashboard-title"> Admin Dashboard</h1>
             </div>
+            <div className="header-right">
+            <input
+              type="text"
+              placeholder="Suche nach Benutzern..."
+              onChange={(e) => setSearch(e.target.value)}
+              className="search-input"
+            />
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn"
@@ -279,16 +286,17 @@ const Dashboard = () => {
             >
               Neuer Benutzer
             </button>
+            </div>
           </div>
 
-          <div className="search-container">
+{/*          <div className="search-container">
             <input
               type="text"
               placeholder="Suche nach Benutzern..."
               onChange={(e) => setSearch(e.target.value)}
               className="search-input"
             />
-          </div>
+          </div>*/}
 
           <div className="table-container">
             <table className="dashboard-table">
