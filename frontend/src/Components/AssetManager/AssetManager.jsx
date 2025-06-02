@@ -53,7 +53,7 @@ const AssetManager = () => {
    * @returns {Array} - Gefilterte und sortierte Asset-Liste
    */
   const getFilteredAndSortedAssets = (assetList, searchTerm, sortBy) => {
-    // Schritt 1: Filtern basierend auf Suchbegriff
+    // Filtern basierend auf Suchbegriff
     let filteredAssets = assetList.filter((asset) => {
       // Wenn Suchfeld leer ist, alle Assets anzeigen
       if (searchTerm === '') return true;
@@ -63,7 +63,7 @@ const AssetManager = () => {
              asset.device_name.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    // Schritt 2: Sortieren basierend auf ausgewählter Option
+    // Sortieren basierend auf ausgewählter Option
     switch (sortBy) {
       case 'Alphabetisch A-Z':
         // Sortierung nach Gerätename aufsteigend (A-Z)
@@ -79,8 +79,8 @@ const AssetManager = () => {
       
       case 'Neueste zuerst':
       default:
-        // Sortierung nach ID aufsteigend (neueste zuerst)
-        return filteredAssets.sort((a, b) => b.id - a.id);
+        // Sortierung nach ID absteigend (neueste zuerst)
+        return filteredAssets.sort((a, b) => a.id - b.id);
     }
   };
 
