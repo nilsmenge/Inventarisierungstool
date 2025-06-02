@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState('');
 
   // Asset bezogene
   const [users, setUsers] = useState([]);
@@ -284,6 +285,7 @@ const Dashboard = () => {
             <input
               type="text"
               placeholder="Suche nach Benutzern..."
+              onChange={(e) => setSearch(e.target.value)}
               className="search-input"
             />
           </div>
@@ -301,7 +303,11 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
+                {users.filter((user) => {
+                  return search.toLowerCase() === '' 
+                  ? user 
+                  : user.first_name.toLowerCase().includes(search.toLowerCase())
+                }).map((user) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
                     <td>{user.first_name}</td>
