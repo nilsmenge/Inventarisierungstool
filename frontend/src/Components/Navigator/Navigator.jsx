@@ -6,7 +6,7 @@ import { BarChart3, QrCode, Package, User } from 'lucide-react'
 const Navigator = () => {
   const navigate = useNavigate()
   const handleDashboard = () => {
-    navigate('/dashboard')
+    navigate('/admindashboard')
   }
   const handleScanner = () => {
     navigate('/scanner')
