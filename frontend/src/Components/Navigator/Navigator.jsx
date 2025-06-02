@@ -12,7 +12,7 @@ const Navigator = () => {
     navigate('/scanner')
   }
   const handleInventory = () => {
-    navigate('/test')
+    navigate('/assets')
   }
 
   return (
