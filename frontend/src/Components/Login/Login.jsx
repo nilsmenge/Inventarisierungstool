@@ -40,7 +40,7 @@ const Login = () => {
     try {
       // Replace spaces and special characters in email for URL
       const encodedEmail = encodeURIComponent(email);
-      const response = await fetch(`http://127.0.0.1:8000/api/users/${encodedEmail}/`);
+      const response = await fetch(`https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${encodedEmail}/`);
       
       if (response.ok) {
         const userData = await response.json();

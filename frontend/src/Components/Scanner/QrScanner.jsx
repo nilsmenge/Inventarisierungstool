@@ -42,6 +42,7 @@ const QrBarcodeScanner = () => {
     serial_no: "",
     device_name: "",
     category: "Laptop",
+    device_status: "Aktiv",
   });
 
   // ===== REF HOOKS =====
@@ -101,7 +102,7 @@ const QrBarcodeScanner = () => {
   const fetchAssetBySerial = async (serialNumber) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/assets/${serialNumber}/`);
+      const response = await fetch(`https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/${serialNumber}/`);
       
       if (response.ok) {
         // Asset gefunden - Daten anzeigen
@@ -333,7 +334,7 @@ const QrBarcodeScanner = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/assets/create/", {
+      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/assets/create/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -356,6 +357,7 @@ const QrBarcodeScanner = () => {
           serial_no: "",
           device_name: "",
           category: "Laptop",
+          device_status: "Aktiv",
         });
       } else {
         // API-Fehler beim Erstellen
@@ -388,6 +390,7 @@ const QrBarcodeScanner = () => {
       serial_no: "",
       device_name: "",
       category: "Laptop",
+      device_status: "Aktiv",
     });
   };
 
@@ -518,6 +521,10 @@ const QrBarcodeScanner = () => {
                 <label>Kategorie:</label>
                 <span>{assetData.category}</span>
               </div>
+              <div className="asset-detail">
+                <label>Status:</label>
+                <span>{assetData.device_status}</span>
+              </div>
             </div>
             <div className="modal-footer">
               <button onClick={closeAssetModal} className="btn-secondary">
@@ -589,6 +596,20 @@ const QrBarcodeScanner = () => {
                     <option value="Tablet">Tablet</option>
                     <option value="Bildschirm">Bildschirm</option>
                     <option value="PC">PC</option>
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Status</label>
+                  <select
+                    name="device_status"
+                    value={formData.device_status}
+                    onChange={handleInputChange}
+                    className="form-select"
+                  >
+                    <option value="Aktiv">Aktiv</option>
+                    <option value="Im Lager">Im Lager</option>
+                    <option value="Defekt">Defekt</option>
                   </select>
                 </div>
               </div>
