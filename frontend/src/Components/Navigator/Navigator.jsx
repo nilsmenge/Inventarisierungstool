@@ -15,6 +15,10 @@ const Navigator = () => {
     navigate('/assets')
   }
 
+  const handleTest = () => {
+    navigate('/test')
+  }
+
   return (
     <div className="navigator-container">
       <div className="navigator-content">
@@ -38,6 +42,10 @@ const Navigator = () => {
             <button className="navigator-button secondary" onClick={handleInventory}>
               <Package size={20} />
               Asset Inventar
+            </button>
+
+            <button className="navigator-button secondary" onClick={handleTest}>
+              Test
             </button>
           </div>
         </div>
