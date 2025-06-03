@@ -427,7 +427,6 @@ const Test = () => {
                   <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
-                <ChevronDown size={16} />
               </div>
 
               {/* Scanner Button */}
