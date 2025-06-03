@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./AssetManager.css";
+import "../AssetManager/AssetManager.css";
 import "./AssetDashboard.css";
 import {
   Icon,
@@ -453,4 +453,4 @@ const AssetDashboard = () => {
   );
 };
 
-export default AssetManager;
+export default AssetDashboard;
