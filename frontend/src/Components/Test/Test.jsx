@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BarChart3, Package, FileText, Settings } from "lucide-react";
 import "./Test.css";
 import {
   Icon,
@@ -15,7 +16,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-const AssetManager = () => {
+const Test = () => {
   // ========== STATE MANAGEMENT ==========
   // Navigation und UI States
   const [activeIndex, setActiveIndex] = useState(0); // Aktiver Menüpunkt in der Sidebar
@@ -338,32 +339,29 @@ const AssetManager = () => {
 
   // Navigation Menu Items
   const menuItems = [
-    { label: "Dashboard", icon: Icon },
-    { label: "Assets", icon: Icon },
-    { label: "Berichte", icon: Icon },
-    { label: "Einstellungen", icon: Icon },
+  { label: "Assets", icon: Package },
+  { label: "Dashboard", icon: BarChart3 },
   ];
 
   // ========== RENDER ==========
   return (
     <div className="asset-manager-container">
-      {/* Mobile Burger Menu */}
-      <div 
-        className={`burger-menu ${isSidebarOpen ? 'open' : ''}`}
+      {/* Mobile Burger Menu 
+      <button
+        className="burger-icon"
         onClick={toggleSidebar}
       >
-        <div className="burger-line"></div>
-        <div className="burger-line"></div>
-        <div className="burger-line"></div>
-      </div>
+        <Menu size={28} />
+      </button>
 
-      {/* Mobile Overlay */}
+
+      {/* Mobile Overlay 
       <div 
         className={`mobile-overlay ${isSidebarOpen ? 'active' : ''}`}
         onClick={closeSidebar}
       ></div>
 
-      {/* Sidebar */}
+      {/* Sidebar *
       <div className={`sideb ${isSidebarOpen ? 'open' : ''}`}>
         <nav className="nav-menu">
           {menuItems.map((item, index) => (
@@ -382,7 +380,7 @@ const AssetManager = () => {
             </a>
           ))}
         </nav>
-      </div>
+      </div>*/}
 
       {/* Main Content */}
       <div className="main-content">
@@ -391,7 +389,7 @@ const AssetManager = () => {
           <div className="content-header">
             <div className="header-left">
               <button id="btn-back" onClick={() => navigate(-1)}>
-                <ArrowLeft size={20} />
+                <ArrowLeft size={24} />
               </button>
               <h1 className="asset-title">Asset-Verwaltung</h1>
             </div>
@@ -687,4 +685,4 @@ const AssetManager = () => {
   );
 };
 
-export default AssetManager;
+export default Test;
