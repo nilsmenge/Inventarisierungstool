@@ -1,7 +1,7 @@
 import React from "react"
 import './Navigator.css'
 import { useNavigate } from 'react-router-dom'
-import { BarChart3, QrCode, Package, User, ChartPie } from 'lucide-react'
+import { BarChart3, QrCode, Package, User, ChartPie, LogOut} from 'lucide-react'
 
 const Navigator = () => {
   const navigate = useNavigate()
@@ -15,6 +15,13 @@ const Navigator = () => {
   };
 
   const isAdmin = getCookie("isAdmin") === "true";
+
+    const handleLogout = () => {
+    document.cookie = "logged_in=false; path=/; SameSite=Strict";
+    document.cookie = "isAdmin=false; path=/; SameSite=Strict";
+    window.currentUser = null;
+    navigate('/login');
+  }
 
   const handleAdmindashboard = () => {
     navigate('/admindashboard')
@@ -30,41 +37,43 @@ const Navigator = () => {
     navigate('/test')
   }
 
-  return (
-    <div className="navigator-container">
-      <div className="navigator-content">
-        <div className="navigator-card">
-          <div className="navigator-header">
-            <h1 className="navigator-title">Asset Management</h1>
-            <p className="navigator-suptitle">Wählen Sie einen Bereich aus</p>
-          </div>
+return (
+  <div className="navigator-container">
+    <button className="navigator-button logout-btn" onClick={handleLogout}>
+      <LogOut size={20} /> Logout
+    </button>
+    <div className="navigator-content">
+      <div className="navigator-card">
+        <div className="navigator-header">
+          <h1 className="navigator-title">Asset Management</h1>
+          <p className="navigator-suptitle">Wählen Sie einen Bereich aus</p>
+        </div>
+        <div className="n-btns">
+          <button className="navigator-button" onClick={handleScanner}>
+            <QrCode size={20} />
+            QR/Barcode Scanner
+          </button>
 
-          <div className="n-btns">
-            <button className="navigator-button" onClick={handleScanner}>
-              <QrCode size={20} />
-              QR/Barcode Scanner
+          {isAdmin && (
+            <button className="navigator-button secondary" onClick={handleAdmindashboard}>
+              <User size={20} />
+              Admin
             </button>
+          )}
 
-            {isAdmin && (
-              <button className="navigator-button secondary" onClick={handleAdmindashboard}>
-                <User size={20} />
-                Admin
-              </button>
-            )}
+          <button className="navigator-button secondary" onClick={handleAssetdashboard}>
+            <ChartPie size={20} />
+            Asset Dashboard
+          </button>
 
-            <button className="navigator-button secondary" onClick={handleAssetdashboard}>
-              <ChartPie size={20} />
-              Asset Dashboard
-            </button>
-
-            <button className="navigator-button secondary" onClick={handleTest}>
-              <Package size={20} />
-              Asset Inventar
-            </button>
-          </div>
+          <button className="navigator-button secondary" onClick={handleTest}>
+            <Package size={20} />
+            Asset Inventar
+          </button>
         </div>
       </div>
     </div>
-  )
+  </div>
+)
 }
 export default Navigator
