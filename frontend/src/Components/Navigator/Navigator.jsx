@@ -1,7 +1,7 @@
 import React from "react"
 import './Navigator.css'
 import { useNavigate } from 'react-router-dom'
-import { BarChart3, QrCode, Package, User } from 'lucide-react'
+import { BarChart3, QrCode, Package, User, ChartPie } from 'lucide-react'
 
 const Navigator = () => {
   const navigate = useNavigate()
@@ -53,11 +53,12 @@ const Navigator = () => {
             )}
 
             <button className="navigator-button secondary" onClick={handleAssetdashboard}>
-              <Package size={20} />
+              <ChartPie size={20} />
               Asset Dashboard
             </button>
 
             <button className="navigator-button secondary" onClick={handleTest}>
+              <Package size={20} />
               Asset Inventar
             </button>
           </div>
