@@ -56,16 +56,16 @@ const Login = () => {
           // Navigate to navigator page
           navigate('/navigator');
 
-          // // Check for admin role
-          // if (userData.department === 'OE18' || userData.department === 'OE 18') {
-          //   console.log('Admin-Zugang gewährt');
-          //   // Setze ein Session-Cookie für Admin
-          //   document.cookie = "isAdmin=true; path=/; SameSite=Strict";
-          // } else {
-          //   console.log('Benutzer-Zugang gewährt');
-          //   // Optional: Setze das Cookie auf false für normale User
-          //   document.cookie = "isAdmin=false; path=/; SameSite=Strict";
-          // }
+          // Check for admin role
+          if (userData.department === 'OE18' || userData.department === 'OE 18') {
+            console.log('Admin-Zugang gewährt');
+            // Setze ein Session-Cookie für Admin
+            document.cookie = "isAdmin=true; path=/; SameSite=Strict";
+          } else {
+            console.log('Benutzer-Zugang gewährt');
+            // Optional: Setze das Cookie auf false für normale User
+            document.cookie = "isAdmin=false; path=/; SameSite=Strict";
+          }
 
           return true;
         } else {
