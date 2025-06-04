@@ -52,18 +52,6 @@ const Test = () => {
     fetchAssets();
   }, []);
 
-  // Sidebar schließen wenn außerhalb geklickt wird
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setIsSidebarOpen(false);
-      }
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
   // ========== HELPER FUNCTIONS ==========
   /**
    * Sortiert und filtert die Assets basierend auf Suchbegriff und Sortierungsoption
