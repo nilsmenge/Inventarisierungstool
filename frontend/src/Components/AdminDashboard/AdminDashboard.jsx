@@ -284,6 +284,7 @@ const Dashboard = () => {
               className="btn"
               id="btn-blue"
             >
+              <Plus size={16} />
               Neuer Benutzer
             </button>
             </div>
@@ -444,6 +445,7 @@ const Dashboard = () => {
 
             <div className="dash-modal-footer">
               <button
+                type="button"
                 onClick={handleCloseModal}
                 className="btn"
                 id="btn-cancel"
@@ -451,7 +453,8 @@ const Dashboard = () => {
               >
                 Abbrechen
               </button>
-              <button 
+              <button
+                type="submit" 
                 className="btn" 
                 id="btn-blue"
                 disabled={isLoading}

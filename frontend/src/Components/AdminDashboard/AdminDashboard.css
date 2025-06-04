@@ -68,6 +68,7 @@
     background-color: #2563eb;
     color: #ffffff;
     border: none;
+    gap: 0.5rem;
 }
 
 #btn-blue:hover{
