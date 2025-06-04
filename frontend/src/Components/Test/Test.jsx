@@ -14,6 +14,7 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
+  ChartPie
 } from "lucide-react";
 
 const Test = () => {
@@ -205,6 +206,13 @@ const Test = () => {
    */
   const handleScan = () => {
     navigate('/scanner')
+  }
+
+  /**
+   * Navigation zum Dashboard
+   */
+  const handleDashboard = () => {
+    navigate('/assetdashboard')
   }
 
   /**
@@ -416,6 +424,12 @@ const Test = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
+
+              {/* Dashboard Button */}
+              <button className="btn-default" onClick={handleDashboard}>
+                <ChartPie size={16} />
+                Dashboard
+              </button>
 
               {/* Scanner Button */}
               <button className="btn-default" onClick={handleScan}>
