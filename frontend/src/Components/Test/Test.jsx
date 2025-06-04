@@ -451,6 +451,7 @@ const Test = () => {
             <table className="asset-tab">
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>Seriennummer</th>
                   <th>Gerätename</th>
                   <th>Kategorie</th>
@@ -461,6 +462,7 @@ const Test = () => {
               <tbody>
                 {filteredAndSortedAssets.map((asset) => (
                   <tr key={asset.id}>
+                    <td>{asset.id}</td>
                     <td>{asset.serial_no}</td>
                     <td>{asset.device_name}</td>
                     <td>{asset.category}</td>
@@ -525,6 +527,10 @@ const Test = () => {
 
                 {/* Expanded Details */}
                 <div className={`asset-card-details ${expandedCards.has(asset.id) ? 'expanded' : ''}`}>
+                  <div className="asset-detail-row">
+                    <span className="asset-detail-label">ID:</span>
+                    <span className="asset-detail-value">{asset.id}</span>
+                  </div>
                   <div className="asset-detail-row">
                     <span className="asset-detail-label">Kategorie:</span>
                     <span className="asset-detail-value">{asset.category}</span>
