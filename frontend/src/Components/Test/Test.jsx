@@ -342,42 +342,6 @@ const Test = () => {
   // ========== RENDER ==========
   return (
     <div className="asset-manager-container">
-      {/* Mobile Burger Menu 
-      <button
-        className="burger-icon"
-        onClick={toggleSidebar}
-      >
-        <Menu size={28} />
-      </button>
-
-
-      {/* Mobile Overlay 
-      <div 
-        className={`mobile-overlay ${isSidebarOpen ? 'active' : ''}`}
-        onClick={closeSidebar}
-      ></div>
-
-      {/* Sidebar *
-      <div className={`sideb ${isSidebarOpen ? 'open' : ''}`}>
-        <nav className="nav-menu">
-          {menuItems.map((item, index) => (
-            <a
-              key={index}
-              href="#"
-              className={`nav-item ${activeIndex === index ? 'active' : ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveIndex(index);
-                closeSidebar(); // Schließe Sidebar nach Auswahl auf Mobile
-              }}
-            >
-              <item.icon size={20} />
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </div>*/}
-
       {/* Main Content */}
       <div className="main-content">
         <div className="content-wrapper">
@@ -494,17 +458,17 @@ const Test = () => {
           </div>
 
           {/* Mobile Card View */}
-          <div className="asset-cards">
+          <div className="mobile-cards">
             {filteredAndSortedAssets.map((asset) => (
               <div 
                 key={asset.id} 
-                className="asset-card"
+                className="mobile-card"
                 onClick={() => toggleCardExpansion(asset.id)}
               >
-                <div className="asset-card-header">
-                  <div className="asset-card-title">{asset.device_name}</div>
-                  <div className="asset-card-serial">{asset.serial_no}</div>
-                  <div className="asset-card-actions">
+                <div className="mobile-card-header">
+                  <div className="mobile-card-title">{asset.device_name}</div>
+                  <div className="mobile-card-serial">{asset.serial_no}</div>
+                  <div className="mobile-card-actions">
                     <button
                       className="action-btn edit-btn"
                       onClick={(e) => handleActionClick(e, 'edit', asset)}
@@ -528,18 +492,18 @@ const Test = () => {
                 </div>
 
                 {/* Expanded Details */}
-                <div className={`asset-card-details ${expandedCards.has(asset.id) ? 'expanded' : ''}`}>
-                  <div className="asset-detail-row">
-                    <span className="asset-detail-label">ID:</span>
-                    <span className="asset-detail-value">{asset.id}</span>
+                <div className={`mobile-card-details ${expandedCards.has(asset.id) ? 'expanded' : ''}`}>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">ID:</span>
+                    <span className="mobile-detail-value">{asset.id}</span>
                   </div>
-                  <div className="asset-detail-row">
-                    <span className="asset-detail-label">Kategorie:</span>
-                    <span className="asset-detail-value">{asset.category}</span>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">Kategorie:</span>
+                    <span className="mobile-detail-value">{asset.category}</span>
                   </div>
-                  <div className="asset-detail-row">
-                    <span className="asset-detail-label">Status:</span>
-                    <span className="asset-detail-value">{asset.device_status}</span>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">Status:</span>
+                    <span className="mobile-detail-value">{asset.device_status}</span>
                   </div>
                 </div>
               </div>

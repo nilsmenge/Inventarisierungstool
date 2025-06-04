@@ -240,13 +240,13 @@
 }
 
 /* Mobile Card View */
-.asset-cards {
+.mobile-cards {
     display: none;
     flex-direction: column;
     gap: 1rem;
 }
 
-.asset-card {
+.mobile-card {
     background-color: white;
     border: 1px solid #e2e8f0;
     border-radius: 0.5rem;
@@ -256,46 +256,46 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.asset-card:hover {
+.mobile-card:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-color: #2563eb;
 }
 
-.asset-card-header {
+.mobile-card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 0.5rem;
 }
 
-.asset-card-title {
+.mobile-card-title {
     font-weight: 600;
     color: #1a202c;
     font-size: 0.875rem;
     flex: 1;
 }
 
-.asset-card-serial {
+.mobile-card-serial {
     color: #6b7280;
     font-size: 0.75rem;
     font-weight: 500;
 }
 
-.asset-card-actions {
+.mobile-card-actions {
     display: flex;
     gap: 0.5rem;
     margin-left: 1rem;
     flex-shrink: 0;
 }
 
-.asset-card-details {
+.mobile-card-details {
     display: none;
     margin-top: 1rem;
     padding-top: 1rem;
     border-top: 1px solid #e5e7eb;
 }
 
-.asset-card-details.expanded {
+.mobile-card-details.expanded {
     display: block;
     animation: slideDown 0.2s ease-out;
 }
@@ -311,19 +311,19 @@
     }
 }
 
-.asset-detail-row {
+.mobile-detail-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
 }
 
-.asset-detail-label {
+.mobile-detail-label {
     font-weight: 500;
     color: #374151;
     font-size: 0.75rem;
 }
 
-.asset-detail-value {
+.mobile-detail-value {
     color: #6b7280;
     font-size: 0.75rem;
 }
@@ -515,29 +515,6 @@
         padding: 0;
     }
 
-    /* Hide sidebar on mobile 
-    .sideb {
-        display: none;
-    }
-
-    .sideb.open {
-        left: 0;
-    }*/
-
-    /* Show burger menu on mobile */
-    .burger-menu {
-        display: flex;
-        top: 1rem;
-        left: 10%;
-        transform: translateX(-50%);
-        z-index: 1001;
-    }
-
-    /* Show mobile overlay when sidebar is open 
-    .mobile-overlay.active {
-        display: block;
-    }
-
     /* Adjust main content */
     .main-content {
         width: 100vw;
@@ -587,7 +564,7 @@
     }
 
     /* Show cards on mobile */
-    .asset-cards {
+    .mobile-cards {
         display: flex;
     }
 
@@ -603,7 +580,7 @@
         height: 1.75rem;
     }
 
-    .asset-card-actions .action-btn {
+    .mobile-card-actions .action-btn {
         width: 1.5rem;
         height: 1.5rem;
     }

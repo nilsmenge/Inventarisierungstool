@@ -12,6 +12,8 @@ import {
   Check,
   X,
   ArrowLeft,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 
 const Dashboard = () => {
@@ -21,8 +23,12 @@ const Dashboard = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption 
 
-  // Asset bezogene
+  // Mobile UI States
+  const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
+
+  // User bezogene
   const [users, setUsers] = useState([]);
   const [editingUser, setEditingUser] = useState(null); // Aktuell zu bearbeitender User
   const [userToDelete, setUserToDelete] = useState(null); // User der gelöscht werden soll
@@ -38,6 +44,46 @@ const Dashboard = () => {
   useEffect(() => {
       fetchUsers();
     }, []);
+
+  // ========== HELPER FUNCTIONS ==========
+  /**
+   * Sortiert und filtert die User basierend auf Suchbegriff und Sortierungsoption
+   * @param {Array} userList - Liste der zu verarbeitenden User
+   * @param {string} searchTerm - Suchbegriff für Filterung
+   * @param {string} sortBy - Sortierungsoption
+   * @returns {Array} - Gefilterte und sortierte User-Liste
+   */
+  const getFilteredAndSortedUsers = (userList, searchTerm, sortBy) => {
+    // Filtern basierend auf Suchbegriff
+    let filteredUsers = userList.filter((user) => {
+      // Wenn Suchfeld leer ist, alle User anzeigen
+      if (searchTerm === '') return true;
+      
+      // Suche in Vor- und Nachnamen (case-insensitive)
+      return user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             user.last_name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    // Sortieren basierend auf ausgewählter Option
+    switch (sortBy) {
+      case 'Alphabetisch A-Z':
+        // Sortierung nach Nachnamen aufsteigend (A-Z)
+        return filteredUsers.sort((a, b) => 
+          a.last_name.toLowerCase().localeCompare(b.last_name.toLowerCase())
+        );
+      
+      case 'Alphabetisch Z-A':
+        // Sortierung nach Nachnamen absteigend (Z-A)
+        return filteredUsers.sort((a, b) => 
+          b.last_name.toLowerCase().localeCompare(a.last_name.toLowerCase())
+        );
+      
+      case 'Neueste zuerst':
+      default:
+        // Sortierung nach ID absteigend (neueste zuerst)
+        return filteredUsers.sort((a, b) => a.id - b.id);
+    }
+  };  
 
   const fetchUsers = async () => {
     try {
@@ -150,6 +196,14 @@ const Dashboard = () => {
   };
 
   /**
+   * Behandelt Änderungen in der Sortierungsauswahl
+   * @param {Event} e - Select Change Event
+   */
+  const handleSortChange = (e) => {
+    setSortOption(e.target.value);
+  };
+
+  /**
    * Öffnet das Bearbeitungs-Modal mit vorausgefüllten Daten
    */
   const handleEditUser = (user) => {
@@ -200,57 +254,38 @@ const Dashboard = () => {
     setUserToDelete(null);
   };
 
-/*    try{
-      const response = await fetch(
-        "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/create/",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      if (response.ok) {
-        // User erfolgreich erstellt
-        const newUser = await response.json();
-        // User zur Liste hinzufügen
-        setUsers((prevData) => [...prevData, newUser]);
+  // =========== MOBILE SPECIFIC HANDLERS =============
+  /**
+   * Toggle Card Details
+   */
+  const toggleCardExpansion = (userId) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(userId)) {
+      newExpanded.delete(userId);
+    } else {
+      newExpanded.add(userId);
+    }
+    setExpandedCards(newExpanded);
+  };
 
-        // Modal schließen und Formular zurücksetzen
-        setIsModalOpen(false);
-        setFormData({
-          last_name:"",
-          first_name:"",
-          department:"",
-          email:"",
-          password:"",
-        });
-
-        console.log("User erfolgreich erstellt:", newUser);
-      } else {
-        const errorData = await response.json();
-        console.error("Fehler beim Erstellen des Users:", errorData);   
-      }
-    } catch (error) {
-        console.error("Netzwerkfehler:", error);
-        alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
-    } finally {
-        setIsLoading(false);
+  /**
+   * Verhindert Event Bubbling für Action Buttons
+   * @param {Event} e - Click Event
+   */
+  const handleActionClick = (e, action, user) => {
+    e.stopPropagation(); // Verhindert Card Toggle
+    
+    if (action === 'edit') {
+      handleEditUser(user);
+    } else if (action === 'delete') {
+      handleDeleteClick(user);
     }
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormData({
-      last_name:"",
-      first_name:"",
-      department:"",
-      email:"",
-      password:"",
-    });
-  }
-*/
+  // ========== COMPUTED VALUES ==========
+  // Gefilterte und sortierte User für die Anzeige
+  const filteredAndSortedUsers = getFilteredAndSortedUsers(users, search, sortOption);
+
   // Toggle password visibility
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -260,7 +295,7 @@ const Dashboard = () => {
     <div className="dashboard-container">
       <div className="dashboard-content">
         <div className="dashboard-card">
-          <div className="dashboard-header">
+          <div className="content-header">
             <div className="header-left">
               <button
                 className="btn"
@@ -272,13 +307,40 @@ const Dashboard = () => {
               </button>
               <h1 className="dashboard-title"> Admin Dashboard</h1>
             </div>
-            <div className="header-right">
+
+            <div className="header-actions">
+            <div className="search-con">
+              <Search 
+                size={16} 
+                style={{
+                position: 'absolute',
+                left: '0.75rem',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                color: '#9ca3af'
+                }}
+              />
             <input
               type="text"
               placeholder="Suche nach Benutzern..."
               onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
+              className="search-inp"
             />
+            </div>
+            
+            {/* Sort Dropdown */}
+            <div className="dropd">
+            <select
+                  className="select-option"
+                  value={sortOption}
+                  onChange={handleSortChange}
+                >
+                  <option value="Neueste zuerst">Neueste zuerst</option>
+                  <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
+                  <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
+            </select>
+            </div>
+
             <button
               onClick={() => setIsModalOpen(true)}
               className="btn"
@@ -289,15 +351,6 @@ const Dashboard = () => {
             </button>
             </div>
           </div>
-
-{/*          <div className="search-container">
-            <input
-              type="text"
-              placeholder="Suche nach Benutzern..."
-              onChange={(e) => setSearch(e.target.value)}
-              className="search-input"
-            />
-          </div>*/}
 
           <div className="table-container">
             <table className="dashboard-table">
@@ -312,11 +365,7 @@ const Dashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {users.filter((user) => {
-                  return search.toLowerCase() === '' 
-                  ? user 
-                  : user.first_name.toLowerCase().includes(search.toLowerCase())
-                }).map((user) => (
+                {filteredAndSortedUsers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
                     <td>{user.first_name}</td>
@@ -328,7 +377,7 @@ const Dashboard = () => {
                       <button
                         className="action-btn edit-btn"
                         onClick={() => handleEditUser(user)}
-                        aria-label="Asset bearbeiten"
+                        aria-label="User bearbeiten"
                       >
                         <Edit size={16} />
                       </button>
@@ -346,10 +395,72 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+          
+          {/* Mobile Card View */}
+          <div className="mobile-cards">
+                {filteredAndSortedUsers.map((user) => (
+                  <div
+                    key={user.id}
+                    className="mobile-card"
+                    onClick={() => toggleCardExpansion(user.id)}
+                  >
+                    <div className="mobile-card-header">
+                      <div className="mobile-card-title">{user.last_name}</div>
+                      <div className="mobile-card-serial">{user.first_name}</div>
+                      <div className="mobile-card-actions">
+                        <button
+                          className="action-btn edit-btn"
+                          onClick={(e) => handleActionClick(e, 'edit', user)}
+                          title="Bearbeiten"
+                        >
+                          <Edit size={12} />
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          onClick={(e) => handleActionClick(e, 'delete', user)}
+                        >
+                          <Trash size={12} />
+                        </button>
+                        {expandedCards.has(user.id) ? (
+                          <ChevronUp size={16} />
+                        ) : (
+                          <ChevronDown size={16} />
+                        )}
+                      </div>
+                    </div>
+
+                  {/* Expanded Details */}
+                  <div className={`mobile-card-details ${expandedCards.has(user.id) ? 'expanded' : ''}`}>
+                    <div className="mobile-detail-row">
+                      <span className="mobile-detail-label">ID:</span>
+                      <span className="mobile-detail-value">{user.id}</span>
+                    </div>
+                    <div className="mobile-detail-row">
+                      <span className="mobile-detail-label">E-Mail:</span>
+                      <span className="mobile-detail-value">{user.email}</span>
+                    </div>
+                    <div className="mobile-detail-row">
+                      <span className="mobile-detail-label">Abteilung:</span>
+                      <span className="mobile-detail-value">{user.department}</span>
+                    </div>
+                    </div>
+                  </div>
+                ))}
+          </div>
+            {/* Empty State */}
+            {filteredAndSortedUsers.length === 0 && (
+              <div style={{
+                textAlign: 'center',
+                padding: '3rem',
+                color: '#6b7280'
+              }}>
+                {search ? 'Keine User gefunden.' : 'Noch keine User vorhanden'}
+              </div>
+            )}
         </div>
       </div>
 
-      {/* ========== ASSET MODAL (Erstellen/Bearbeiten) ========== */}
+      {/* ========== User MODAL (Erstellen/Bearbeiten) ========== */}
       {isModalOpen && (
         <div className="dash-modal-overlay">
           <div className="dash-modal">
