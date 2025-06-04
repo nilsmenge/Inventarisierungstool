@@ -13,6 +13,9 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
+  // Set initial cookie for logged-in state
+  document.cookie = "logged_in=false; path=/; SameSite=Strict";
+
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -48,6 +51,7 @@ const Login = () => {
         // Check if password matches
         if (userData.password === password) {
           console.log('Login erfolgreich:', userData);
+          document.cookie = "logged_in=true; path=/; SameSite=Strict";
           
           // Store user data in memory (not localStorage due to artifact restrictions)
           // In a real app, you'd use proper authentication tokens
@@ -63,7 +67,6 @@ const Login = () => {
             document.cookie = "isAdmin=true; path=/; SameSite=Strict";
           } else {
             console.log('Benutzer-Zugang gewährt');
-            // Optional: Setze das Cookie auf false für normale User
             document.cookie = "isAdmin=false; path=/; SameSite=Strict";
           }
 
