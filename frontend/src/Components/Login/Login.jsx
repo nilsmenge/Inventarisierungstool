@@ -13,9 +13,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Set initial cookie for logged-in state
-  document.cookie = "logged_in=false; path=/; SameSite=Strict";
-
   // Handle input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -73,13 +70,16 @@ const Login = () => {
           return true;
         } else {
           setError('Falsches Passwort. Bitte versuchen Sie es erneut.');
+          document.cookie = "logged_in=false; path=/; SameSite=Strict";
           return false;
         }
       } else if (response.status === 404) {
         setError('Benutzer nicht gefunden. Bitte überprüfen Sie Ihre E-Mail-Adresse.');
+        document.cookie = "logged_in=false; path=/; SameSite=Strict";
         return false;
       } else {
         setError(`Fehler beim Anmelden: ${response.status}`);
+        document.cookie = "logged_in=false; path=/; SameSite=Strict";
         return false;
       }
     } catch (err) {
