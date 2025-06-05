@@ -392,7 +392,7 @@ const Test = () => {
               {/* Dashboard Button */}
               <button className="btn-default" onClick={handleDashboard}>
                 <ChartPie size={16} />
-                Test-Dashboard
+                Dashboard
               </button>
 
               {/* Scanner Button */}

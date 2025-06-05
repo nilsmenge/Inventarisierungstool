@@ -87,7 +87,7 @@ const AssetDashboard = () => {
   };
 
   const handleAssets = () => {
-    navigate('/assets');
+    navigate('/test');
   };
 
   const handleInputChange = (e) => {
