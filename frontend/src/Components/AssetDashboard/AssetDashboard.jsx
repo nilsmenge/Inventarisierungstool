@@ -23,7 +23,7 @@ const AssetDashboard = () => {
     }
   };
 
-  // Kategorien für das Kuchendiagramm zählen
+  // Kategorien für das erste Kuchendiagramm zählen
   const getCategoryCounts = () => {
     const counts = {};
     assets.forEach(asset => {
@@ -33,8 +33,20 @@ const AssetDashboard = () => {
     return counts;
   };
 
+  // Device Status für das zweite Kuchendiagramm zählen
+  const getStatusCounts = () => {
+    const counts = {};
+    assets.forEach(asset => {
+      const status = asset.device_status || "Unbekannt";
+      counts[status] = (counts[status] || 0) + 1;
+    });
+    return counts;
+  };
+
   const categoryCounts = getCategoryCounts();
-  const pieData = {
+  const statusCounts = getStatusCounts();
+
+  const pieDataCategory = {
     labels: Object.keys(categoryCounts),
     datasets: [
       {
@@ -42,6 +54,19 @@ const AssetDashboard = () => {
         backgroundColor: [
           "#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f",
           "#edc949", "#af7aa1", "#ff9da7", "#9c755f", "#bab0ab"
+        ],
+      },
+    ],
+  };
+
+  const pieDataStatus = {
+    labels: Object.keys(statusCounts),
+    datasets: [
+      {
+        data: Object.values(statusCounts),
+        backgroundColor: [
+          "#59a14f", "#e15759", "#4e79a7", "#f28e2b", "#edc949",
+          "#af7aa1", "#ff9da7", "#76b7b2", "#9c755f", "#bab0ab"
         ],
       },
     ],
@@ -69,10 +94,15 @@ const AssetDashboard = () => {
               </button>
             </div>
           </div>
-          {/* Kuchendiagramm zentriert */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+          {/* Zwei Kuchendiagramme nebeneinander zentriert */}
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px", gap: "40px" }}>
             <div style={{ width: 400, height: 400 }}>
-              <Pie data={pieData} />
+              <h3 style={{ textAlign: "center" }}>Kategorien</h3>
+              <Pie data={pieDataCategory} />
+            </div>
+            <div style={{ width: 400, height: 400 }}>
+              <h3 style={{ textAlign: "center" }}>Gerätestatus</h3>
+              <Pie data={pieDataStatus} />
             </div>
           </div>
         </div>
