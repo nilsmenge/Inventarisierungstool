@@ -39,9 +39,6 @@ const Navigator = () => {
 
 return (
   <div className="navigator-container">
-    <button className="navigator-button logout-btn" onClick={handleLogout}>
-      <LogOut size={20} /> Logout
-    </button>
     <div className="navigator-content">
       <div className="navigator-card">
         <div className="navigator-header">
@@ -69,6 +66,11 @@ return (
           <button className="navigator-button secondary" onClick={handleTest}>
             <Package size={20} />
             Asset Inventar
+          </button>
+
+          <button className="navigator-button logout" onClick={handleLogout}>
+            <LogOut size={20} /> 
+            Logout
           </button>
         </div>
       </div>

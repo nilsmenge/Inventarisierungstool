@@ -105,18 +105,18 @@
   cursor: pointer;
 }
 
-/* .navigator-button.logout{
+.navigator-button.logout{
     background-color: #ff0000;
     color: white;
     border: 1px solid #460000;
-} */
+}
 
-/* .navigator-button.navigator-button.logout:hover{
+.navigator-button.navigator-button.logout:hover{
     background-color: grey;
     border-color: #cbd5e0;
     color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-} */
+}
 
 @media (min-width: 768px) {
     .n-btns{

@@ -122,11 +122,11 @@ const AssetDashboard = () => {
     }
   };
 
-  // // Dummy-Funktion für getFilteredAndSortedAssets
-  // const getFilteredAndSortedAssets = (assets, search, sortOption) => {
+  // Dummy-Funktion für getFilteredAndSortedAssets
+   const getFilteredAndSortedAssets = (assets, search, sortOption) => {
   //   // Hier sollte deine Filter- und Sortierlogik stehen
-  //   return assets;
-  // };
+     return assets;
+   };
 
   // const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
 
