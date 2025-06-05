@@ -128,7 +128,7 @@ const AssetDashboard = () => {
      return assets;
    };
 
-  // const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
+   const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
 
   // ========== RENDER ==========
   return (
@@ -155,7 +155,7 @@ const AssetDashboard = () => {
               {/* Scanner Button */}
               <button className="btn-default" onClick={handleScan}>
                 <QrCode size={16} />
-                Scanner
+                Test-Scanner
               </button>
             </div>
           </div>
