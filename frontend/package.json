@@ -11,10 +11,12 @@
   },
   "dependencies": {
     "@zxing/library": "^0.21.3",
+    "chart.js": "^4.4.9",
     "jsqr": "^1.4.0",
     "lucide-react": "^0.509.0",
     "qr-scanner": "^1.4.2",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.5.1"
   },
