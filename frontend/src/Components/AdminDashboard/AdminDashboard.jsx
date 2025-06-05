@@ -16,7 +16,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-const Dashboard = () => {
+const AdminDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -616,4 +616,4 @@ const Dashboard = () => {
     </div>
   );
 };
-export default Dashboard;
+export default AdminDashboard;
