@@ -155,7 +155,7 @@ const AssetDashboard = () => {
               {/* Scanner Button */}
               <button className="btn-default" onClick={handleScan}>
                 <QrCode size={16} />
-                Test-Scanner
+                Scanner
               </button>
             </div>
           </div>

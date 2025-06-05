@@ -394,7 +394,7 @@ const Test = () => {
               {/* Dashboard Button */}
               <button className="btn-default" onClick={handleDashboard}>
                 <ChartPie size={16} />
-                Dashboard
+                Test-Dashboard
               </button>
 
               {/* Scanner Button */}
@@ -658,4 +658,4 @@ const Test = () => {
   );
 };
 
-export default AssetDashboard;
+export default Test;
