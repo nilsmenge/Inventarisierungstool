@@ -130,4 +130,21 @@
         min-width: 200px;
         max-width: 250px;
     }
+
+}
+
+@media (max-width: 480px) {
+    .navigator-container{
+        padding: 1rem;
+        padding-top: 4rem;
+    }
+
+    .logout-btn{
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        padding: 1rem 1.5rem;
+    }
 }
