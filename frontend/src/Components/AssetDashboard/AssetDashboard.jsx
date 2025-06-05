@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BarChart3, Package, FileText, Settings, ArrowLeft, QrCode } from "lucide-react";
-import "./Test.css";
+import "./AssetDashboard.css";
 
 const AssetDashboard = () => {
   // ========== STATE MANAGEMENT ==========

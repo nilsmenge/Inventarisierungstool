@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { BarChart3, Package, FileText, Settings } from "lucide-react";
-import "./Test/Test.css";
+import { BarChart3, Package, FileText, Settings, QrCode } from "lucide-react";
 import "./Test.css";
-import "./AssetDashboard.css";
 import {
   Icon,
   Search,

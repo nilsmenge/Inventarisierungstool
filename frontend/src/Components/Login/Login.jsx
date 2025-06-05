@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, EyeOff, User, Lock, AlertCircle } from 'lucide-react';
+import { Eye, EyeOff, User, Lock, AlertCircle, ArrowLeft, Search, Plus } from 'lucide-react';
 import './Login.css'
 import { useNavigate } from 'react-router-dom';
-import React from 'react';
 
 const Login = () => {
   const [formData, setFormData] = useState({
