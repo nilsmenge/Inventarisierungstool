@@ -121,8 +121,8 @@
 @media (min-width: 768px) {
     .n-btns{
         flex-direction: column !important;
-        justify-content: flex-start;
-        flex-wrap: nowrap;
+        justify-content: center;
+        flex-wrap: wrap;
     }
 
     .navigator-button{
