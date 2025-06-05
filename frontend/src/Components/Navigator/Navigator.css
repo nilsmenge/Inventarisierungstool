@@ -42,7 +42,8 @@
 
 .n-btns{
     display: flex;
-    flex-direction: column !important;
+    flex-direction: column;
+    align-items: center; 
     gap: 1rem;
     width: 100%;
 }
@@ -120,9 +121,9 @@
 
 @media (min-width: 768px) {
     .n-btns{
-        flex-direction: column !important;
+        flex-direction: column;
         justify-content: center;
-        flex-wrap: wrap;
+        /* flex-wrap: wrap;  */
     }
 
     .navigator-button{
