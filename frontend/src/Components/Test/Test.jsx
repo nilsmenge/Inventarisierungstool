@@ -399,7 +399,7 @@ const Test = () => {
 
               {/* Scanner Button */}
               <button className="btn-default" onClick={handleScan}>
-                <Search size={16} />
+                <QrCode size={16} />
                 Scanner
               </button>
 
