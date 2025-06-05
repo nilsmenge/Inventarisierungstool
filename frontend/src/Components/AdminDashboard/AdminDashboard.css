@@ -396,8 +396,27 @@
     }
 }
 
+/* Sichtbar auf iPad und kleiner */
 @media (max-width: 1024px) {
   .mobile-overlay.active {
     display: block;
   }
+
+  .dashboard-container{
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main-content {
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;    /* Zentriert den Inhalt horizontal */
+    padding: 4rem 0.5rem 1rem 0.5rem;
+    margin: 0;
+    }
+  
 }
