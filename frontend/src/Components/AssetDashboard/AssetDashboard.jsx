@@ -122,13 +122,13 @@ const AssetDashboard = () => {
     }
   };
 
-  // Dummy-Funktion für getFilteredAndSortedAssets
-  const getFilteredAndSortedAssets = (assets, search, sortOption) => {
-    // Hier sollte deine Filter- und Sortierlogik stehen
-    return assets;
-  };
+  // // Dummy-Funktion für getFilteredAndSortedAssets
+  // const getFilteredAndSortedAssets = (assets, search, sortOption) => {
+  //   // Hier sollte deine Filter- und Sortierlogik stehen
+  //   return assets;
+  // };
 
-  const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
+  // const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
 
   // ========== RENDER ==========
   return (
