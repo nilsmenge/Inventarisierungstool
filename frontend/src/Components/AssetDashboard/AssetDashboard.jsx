@@ -78,7 +78,7 @@ const AssetDashboard = () => {
         <div className="content-wrapper">
           <div className="content-header">
             <div className="header-left">
-              <button id="btn-back" onClick={() => navigate(-1)}>
+              <button id="btn-back" onClick={() => navigate("/navigator")}>
                 <ArrowLeft size={24} />
               </button>
               <h1 className="asset-title">Asset-Dashboard</h1>
