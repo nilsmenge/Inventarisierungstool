@@ -167,6 +167,60 @@
     }
 }
 
+@media (min-width: 481px) and (max-width: 768px) {
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .content-wrapper {
+        padding: 1.25rem;
+    }
+    
+    .content-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+        margin-bottom: 1.25rem;
+    }
+    
+    .header-left {
+        width: 100%;
+        gap: 1.25rem;
+    }
+    
+    .asset-title {
+        font-size: 1.5rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+    
+    .btn-default {
+        padding: 0.625rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .charts-container {
+        flex-direction: column;
+        gap: 30px;
+        min-height: auto;
+        align-items: center;
+    }
+    
+    .chart-item {
+        width: 100%;
+        max-width: 350px;
+        height: 350px;
+    }
+    
+    .chart-title {
+        font-size: 1.125rem;
+    }
+}
+
 @media (max-width: 1024px) {
     .main-content {
         padding: 1.5rem;
