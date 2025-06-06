@@ -221,7 +221,7 @@
     }
 }
 
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     .main-content {
         padding: 1.5rem;
     }
@@ -253,5 +253,22 @@
     
     .chart-title {
         font-size: 1.125rem;
+    }
+}
+
+@media (min-width: 1025px) {
+    .charts-container {
+        flex-direction: row;
+        gap: 40px;
+        flex-wrap: nowrap;
+    }
+    
+    .chart-item {
+        width: 400px;
+        height: 400px;
+    }
+    
+    .chart-title {
+        font-size: 1.25rem;
     }
 }
