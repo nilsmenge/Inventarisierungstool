@@ -166,3 +166,38 @@
         margin-bottom: 0.5rem;
     }
 }
+
+@media (max-width: 1024px) {
+    .main-content {
+        padding: 1.5rem;
+    }
+    
+    .content-wrapper {
+        padding: 1.5rem;
+    }
+    
+    .content-header {
+        flex-direction: row;
+        margin-bottom: 1.5rem;
+    }
+    
+    .asset-title {
+        font-size: 1.625rem;
+    }
+    
+    .charts-container {
+        flex-direction: row;
+        gap: 30px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .chart-item {
+        width: 320px;
+        height: 320px;
+    }
+    
+    .chart-title {
+        font-size: 1.125rem;
+    }
+}
