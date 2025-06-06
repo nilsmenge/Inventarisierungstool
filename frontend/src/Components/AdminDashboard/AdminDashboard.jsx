@@ -293,8 +293,8 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <div className="dashboard-content">
-        <div className="dashboard-card">
+      <div className="main-content">
+        <div className="content-wrapper">
           <div className="content-header">
             <div className="header-left">
               <button
@@ -352,7 +352,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          <div className="table-container">
+          <div className="table-con">
             <table className="dashboard-table">
               <thead>
                 <tr>
