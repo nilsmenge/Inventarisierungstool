@@ -94,14 +94,15 @@ const AssetDashboard = () => {
               </button>
             </div>
           </div>
+
           {/* Zwei Kuchendiagramme nebeneinander zentriert */}
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px", gap: "40px" }}>
-            <div style={{ width: 400, height: 400 }}>
-              <h3 style={{ textAlign: "center" }}>Kategorien</h3>
+          <div className="charts-container" style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px", gap: "40px" }}>
+            <div className="chart-item" style={{ width: 400, height: 400 }}>
+              <h3 className="chart-title" style={{ textAlign: "center" }}>Kategorien</h3>
               <Pie data={pieDataCategory} />
             </div>
-            <div style={{ width: 400, height: 400 }}>
-              <h3 style={{ textAlign: "center" }}>Gerätestatus</h3>
+            <div className="chart-item" style={{ width: 400, height: 400 }}>
+              <h3 className="chart-title" style={{ textAlign: "center" }}>Gerätestatus</h3>
               <Pie data={pieDataStatus} />
             </div>
           </div>
