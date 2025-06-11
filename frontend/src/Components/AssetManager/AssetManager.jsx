@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { BarChart3, Package, FileText, Settings, QrCode } from "lucide-react";
 import "./AssetManager.css";
 import {
   Icon,
@@ -10,6 +11,10 @@ import {
   Check,
   X,
   ArrowLeft,
+  Menu,
+  ChevronDown,
+  ChevronUp,
+  ChartPie
 } from "lucide-react";
 
 const AssetManager = () => {
@@ -21,6 +26,10 @@ const AssetManager = () => {
   const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
   const [search, setSearch] = useState(''); // Suchbegriff für Filterung
   const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption
+  
+  // Mobile UI States
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar für mobile
+  const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
   
   // Asset-bezogene States
   const [assets, setAssets] = useState([]); // Liste aller Assets
@@ -200,6 +209,13 @@ const AssetManager = () => {
   }
 
   /**
+   * Navigation zum Dashboard
+   */
+  const handleDashboard = () => {
+    navigate('/assetdashboard')
+  }
+
+  /**
    * Behandelt Änderungen in Formularfeldern
    * @param {Event} e - Input Change Event
    */
@@ -270,64 +286,99 @@ const AssetManager = () => {
     setAssetToDelete(null);
   };
 
+  // ========== MOBILE SPECIFIC HANDLERS ==========
+  /**
+   * Toggle Sidebar für Mobile
+   */
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  /**
+   * Schließt Sidebar wenn Overlay geklickt wird
+   */
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  /**
+   * Toggle Card Details
+   * @param {number} assetId - ID des Assets
+   */
+  const toggleCardExpansion = (assetId) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(assetId)) {
+      newExpanded.delete(assetId);
+    } else {
+      newExpanded.add(assetId);
+    }
+    setExpandedCards(newExpanded);
+  };
+
+  /**
+   * Verhindert Event Bubbling für Action Buttons
+   * @param {Event} e - Click Event
+   */
+  const handleActionClick = (e, action, asset) => {
+    e.stopPropagation(); // Verhindert Card Toggle
+    
+    if (action === 'edit') {
+      handleEditAsset(asset);
+    } else if (action === 'delete') {
+      handleDeleteClick(asset);
+    }
+  };
+
+  // ========== COMPUTED VALUES ==========
+  // Gefilterte und sortierte Assets für die Anzeige
+  const filteredAndSortedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
+
+  // Navigation Menu Items
+  const menuItems = [
+  { label: "Assets", icon: Package },
+  { label: "Dashboard", icon: BarChart3 },
+  ];
+
   // ========== RENDER ==========
-  const menuItems = ["Assets", "Dashboard"]; // Sidebar-Menüpunkte
-
-  // Gefilterte und sortierte Assets für die Anzeige vorbereiten
-  const displayedAssets = getFilteredAndSortedAssets(assets, search, sortOption);
-
   return (
     <div className="asset-manager-container">
-      {/* ========== SIDEBAR ========== */}
-      <div className="sideb">
-        <nav className="nav-menu">
-          {menuItems.map((item, idx) => (
-            <a
-              href="#"
-              key={item}
-              className={`nav-item${activeIndex === idx ? " active" : ""}`}
-              onClick={() => setActiveIndex(idx)}
-            >
-              {item}
-            </a>
-          ))}
-        </nav>
-      </div>
-
-      {/* ========== MAIN CONTENT ========== */}
+      {/* Main Content */}
       <div className="main-content">
         <div className="content-wrapper">
-          {/* Header mit Titel und Aktionen */}
+          {/* Header */}
           <div className="content-header">
             <div className="header-left">
-              {/* Zurück-Button */}
-              <button
-                className="btn"
-                id="btn-back"
-                onClick={() => navigate("/navigator")}
-                aria-label="Zurück"
-              >
+              <button id="btn-back" onClick={() => navigate("/navigator")}>
                 <ArrowLeft size={24} />
               </button>
-              <h1 className="asset-title">Assets</h1>
+              <h1 className="asset-title">Asset-Verwaltung</h1>
             </div>
-            
-            {/* Header-Aktionen (Suche, Filter, Buttons) */}
+
             <div className="header-actions">
-              {/* Suchfeld */}
+              {/* Search */}
               <div className="search-con">
+                <Search 
+                  size={16} 
+                  style={{
+                    position: 'absolute',
+                    left: '0.75rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: '#9ca3af'
+                  }}
+                />
                 <input
                   type="text"
-                  placeholder="Suche..."
+                  placeholder="Suche nach Assets..."
+                  className="search-inp"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="search-inp"
                 />
               </div>
-              
-              {/* Sortierung/Filter Dropdown */}
+
+              {/* Sort Dropdown */}
               <div className="dropd">
-                <select 
+                <select
                   className="select-option"
                   value={sortOption}
                   onChange={handleSortChange}
@@ -337,25 +388,31 @@ const AssetManager = () => {
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
               </div>
-              
-              {/* Aktions-Buttons */}
-              <button 
-                className="btn-default"
-                onClick={handleScan}
-              >
-                Scan
+
+              {/* Dashboard Button */}
+              <button className="btn-default" onClick={handleDashboard}>
+                <ChartPie size={16} />
+                Dashboard
               </button>
-              <button className="btn-default">Filter</button>
-              <button
-                onClick={() => setIsModalOpen(true)}
+
+              {/* Scanner Button */}
+              <button className="btn-default" onClick={handleScan}>
+                <QrCode size={16} />
+                Scanner
+              </button>
+
+              {/* New Asset Button */}
+              <button 
                 className="btn-newasset"
+                onClick={() => setIsModalOpen(true)}
               >
+                <Plus size={16} />
                 Neues Asset
               </button>
             </div>
           </div>
 
-          {/* ========== ASSETS TABELLE ========== */}
+          {/* Desktop Table View */}
           <div className="table-con">
             <table className="asset-tab">
               <thead>
@@ -369,128 +426,190 @@ const AssetManager = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* Asset-Zeilen dynamisch rendern mit Filterung und Sortierung */}
-                {displayedAssets.map((asset) => (
+                {filteredAndSortedAssets.map((asset) => (
                   <tr key={asset.id}>
                     <td>{asset.id}</td>
                     <td>{asset.serial_no}</td>
                     <td>{asset.device_name}</td>
                     <td>{asset.category}</td>
                     <td>{asset.device_status}</td>
-                    <td className="action-buttons">
-                      {/* Bearbeiten-Button */}
-                      <button
-                        className="action-btn edit-btn"
-                        onClick={() => handleEditAsset(asset)}
-                        aria-label="Asset bearbeiten"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      {/* Löschen-Button */}
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => handleDeleteClick(asset)}
-                        aria-label="Asset löschen"
-                      >
-                        <Trash size={16} />
-                      </button>
+                    <td>
+                      <div className="action-buttons">
+                        <button
+                          className="action-btn edit-btn"
+                          onClick={() => handleEditAsset(asset)}
+                          title="Bearbeiten"
+                        >
+                          <Edit size={14} />
+                        </button>
+                        <button
+                          className="action-btn delete-btn"
+                          onClick={() => handleDeleteClick(asset)}
+                          title="Löschen"
+                        >
+                          <Trash size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Card View */}
+          <div className="mobile-cards">
+            {filteredAndSortedAssets.map((asset) => (
+              <div 
+                key={asset.id} 
+                className="mobile-card"
+                onClick={() => toggleCardExpansion(asset.id)}
+              >
+                <div className="mobile-card-header">
+                  <div className="mobile-card-title">{asset.device_name}</div>
+                  <div className="mobile-card-serial">{asset.serial_no}</div>
+                  <div className="mobile-card-actions">
+                    <button
+                      className="action-btn edit-btn"
+                      onClick={(e) => handleActionClick(e, 'edit', asset)}
+                      title="Bearbeiten"
+                    >
+                      <Edit size={12} />
+                    </button>
+                    <button
+                      className="action-btn delete-btn"
+                      onClick={(e) => handleActionClick(e, 'delete', asset)}
+                      title="Löschen"
+                    >
+                      <Trash size={12} />
+                    </button>
+                    {expandedCards.has(asset.id) ? (
+                      <ChevronUp size={16} />
+                    ) : (
+                      <ChevronDown size={16} />
+                    )}
+                  </div>
+                </div>
+
+                {/* Expanded Details */}
+                <div className={`mobile-card-details ${expandedCards.has(asset.id) ? 'expanded' : ''}`}>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">ID:</span>
+                    <span className="mobile-detail-value">{asset.id}</span>
+                  </div>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">Kategorie:</span>
+                    <span className="mobile-detail-value">{asset.category}</span>
+                  </div>
+                  <div className="mobile-detail-row">
+                    <span className="mobile-detail-label">Status:</span>
+                    <span className="mobile-detail-value">{asset.device_status}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Empty State */}
+          {filteredAndSortedAssets.length === 0 && (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: '3rem', 
+              color: '#6b7280' 
+            }}>
+              {search ? 'Keine Assets gefunden.' : 'Noch keine Assets vorhanden.'}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* ========== ASSET MODAL (Erstellen/Bearbeiten) ========== */}
+      {/* Create/Edit Asset Modal */}
       {isModalOpen && (
         <div className="asset-modal-overlay">
           <div className="asset-modal">
+            <h2 className="asset-modal-title">
+              {editingAsset ? 'Asset bearbeiten' : 'Neues Asset erstellen'}
+            </h2>
+            
             <form onSubmit={handleCreateAsset}>
-              {/* Modal-Titel dynamisch je nach Aktion */}
-              <h2 className="asset-modal-title">
-                {editingAsset ? "Asset bearbeiten" : "Neues Asset anlegen"}
-              </h2>
-
-              {/* Seriennummer Eingabe */}
               <div className="asset-form-group">
                 <label className="form-label">Seriennummer</label>
                 <input
                   type="text"
                   name="serial_no"
+                  className="form-input"
                   value={formData.serial_no}
                   onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Seriennummer eingeben"
+                  disabled={editingAsset !== null} // Seriennummer nicht änderbar bei Bearbeitung
                   required
                 />
               </div>
 
-              {/* Gerätename Eingabe */}
               <div className="asset-form-group">
                 <label className="form-label">Gerätename</label>
                 <input
                   type="text"
                   name="device_name"
+                  className="form-input"
                   value={formData.device_name}
                   onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Gerätenamen eingeben"
                   required
                 />
               </div>
 
-              {/* Kategorie Auswahl */}
               <div className="asset-form-group">
                 <label className="form-label">Kategorie</label>
-                <select 
+                <select
                   name="category"
-                  value={formData.category}
-                  onChange={handleInputChange} 
                   className="form-select"
+                  value={formData.category}
+                  onChange={handleInputChange}
                 >
                   <option value="Laptop">Laptop</option>
-                  <option value="Handy">Handy</option>
+                  <option value="Desktop">Desktop</option>
+                  <option value="Monitor">Monitor</option>
+                  <option value="Drucker">Drucker</option>
                   <option value="Tablet">Tablet</option>
-                  <option value="Bildschirm">Bildschirm</option>
-                  <option value="PC">PC</option>
+                  <option value="Smartphone">Smartphone</option>
+                  <option value="Server">Server</option>
+                  <option value="Netzwerk">Netzwerk</option>
+                  <option value="Sonstiges">Sonstiges</option>
                 </select>
               </div>
 
-              {/* Status Auswahl */}
               <div className="asset-form-group">
                 <label className="form-label">Status</label>
-                <select 
+                <select
                   name="device_status"
-                  value={formData.device_status}
-                  onChange={handleInputChange} 
                   className="form-select"
+                  value={formData.device_status}
+                  onChange={handleInputChange}
                 >
                   <option value="Aktiv">Aktiv</option>
-                  <option value="Im Lager">Im Lager</option>
+                  <option value="Inaktiv">Inaktiv</option>
+                  <option value="Wartung">Wartung</option>
                   <option value="Defekt">Defekt</option>
+                  <option value="Ausgemustert">Ausgemustert</option>
                 </select>
               </div>
 
-              {/* Modal Footer mit Buttons */}
               <div className="asset-modal-footer">
                 <button
                   type="button"
-                  onClick={handleCloseModal}
-                  className="asset-btn"
                   id="dash-btn-cancel"
+                  className="asset-btn"
+                  onClick={handleCloseModal}
                   disabled={isLoading}
                 >
                   Abbrechen
                 </button>
                 <button
-                  type="submit" 
-                  className="asset-btn" 
+                  type="submit"
                   id="asset-btn-save"
+                  className="asset-btn"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Speichern...' : 'Speichern'}
+                  {isLoading ? 'Speichern...' : (editingAsset ? 'Aktualisieren' : 'Erstellen')}
                 </button>
               </div>
             </form>
@@ -498,36 +617,36 @@ const AssetManager = () => {
         </div>
       )}
 
-      {/* ========== LÖSCH-BESTÄTIGUNGS MODAL ========== */}
+      {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="asset-modal-overlay">
           <div className="asset-modal delete-modal">
             <h2 className="asset-modal-title">Asset löschen</h2>
             
-            {/* Bestätigungstext mit Asset-Details */}
-            <p className="delete-confirmation-text">
-              Sind Sie sicher, dass Sie das Asset "{assetToDelete?.device_name}" 
-              (Seriennummer: {assetToDelete?.serial_no}) löschen möchten?
-            </p>
-            
-            {/* Modal Footer mit Abbrechen/Bestätigen */}
+            <div className="delete-confirmation-text">
+              Sind Sie sicher, dass Sie das Asset <strong>"{assetToDelete?.device_name}"</strong> 
+              {' '}mit der Seriennummer <strong>"{assetToDelete?.serial_no}"</strong> löschen möchten?
+              <br /><br />
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </div>
+
             <div className="asset-modal-footer">
               <button
                 type="button"
-                onClick={handleCloseDeleteModal}
-                className="asset-btn"
                 id="dash-btn-cancel"
+                className="asset-btn"
+                onClick={handleCloseDeleteModal}
                 disabled={isLoading}
               >
                 Abbrechen
               </button>
               <button
                 type="button"
-                onClick={handleConfirmDelete}
                 className="asset-btn delete-confirm-btn"
+                onClick={handleConfirmDelete}
                 disabled={isLoading}
               >
-                {isLoading ? 'Löschen...' : 'Ja, löschen'}
+                {isLoading ? 'Löschen...' : 'Löschen'}
               </button>
             </div>
           </div>

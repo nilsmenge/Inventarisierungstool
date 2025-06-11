@@ -33,8 +33,8 @@ const Navigator = () => {
     navigate('/assetdashboard')
   }
 
-  const handleTest = () => {
-    navigate('/test')
+  const handleAssetManager = () => {
+    navigate('/assetmanager')
   }
 
 return (
@@ -63,7 +63,7 @@ return (
             Asset Dashboard
           </button>
 
-          <button className="navigator-button secondary" onClick={handleTest}>
+          <button className="navigator-button secondary" onClick={handleAssetManager}>
             <Package size={20} />
             Asset Inventar
           </button>
