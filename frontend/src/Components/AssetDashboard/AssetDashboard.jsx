@@ -84,7 +84,7 @@ const AssetDashboard = () => {
               <h1 className="asset-title">Asset-Dashboard</h1>
             </div>
             <div className="header-actions">
-              <button className="btn-default" onClick={() => navigate('/test')}>
+              <button className="btn-default" onClick={() => navigate('/assetmanager')}>
                 <Package size={16} />
                 Asset Inventar
               </button>

@@ -226,13 +226,6 @@ const Login = () => {
             </button>
           </div>
         </form>
-
-        {/* "Passwort vergessen" Link (aktuell nur Platzhalter) */}
-        <div className="link-pw">
-          <a href="#" onClick={(e) => e.preventDefault()}>
-            Passwort vergessen?
-          </a>
-        </div>
       </div>
     </div>
   );
