@@ -4,63 +4,79 @@ import './Login.css'
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  // State für Formular-Daten (E-Mail und Passwort)
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  
+  // State für Fehlermeldungen
   const [error, setError] = useState(null);
+  
+  // State für Lade-Zustand während API-Aufruf
   const [isLoading, setIsLoading] = useState(false);
+  
+  // State für Passwort-Sichtbarkeit (anzeigen/verbergen)
   const [showPassword, setShowPassword] = useState(false);
+  
+  // React Router Hook für Navigation zwischen Seiten
   const navigate = useNavigate();
 
-  // Handle input changes
+  // Funktion zur Behandlung von Eingabeänderungen in den Formularfeldern
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // Aktualisiere nur das geänderte Feld im formData State
     setFormData(prevData => ({
       ...prevData,
       [name]: value
     }));
-    // Clear error when user starts typing
+    // Lösche vorhandene Fehlermeldung wenn Benutzer tippt
     if (error) {
       setError(null);
     }
   };
 
-  // Validate email format
+  // Hilfsfunktion zur Validierung des E-Mail-Formats
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  // Login API call
+  // Hauptfunktion für Benutzer-Authentifizierung
   const authenticateUser = async (email, password) => {
+    // Setze Lade-Status und lösche vorherige Fehler
     setIsLoading(true);
     setError(null);
 
     try {
-      // Replace spaces and special characters in email for URL
+      // Kodiere E-Mail für sichere URL-Übertragung (Leerzeichen, Sonderzeichen)
       const encodedEmail = encodeURIComponent(email);
+      
+      // API-Aufruf zum Abrufen der Benutzerdaten
       const response = await fetch(`https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${encodedEmail}/`);
       
       if (response.ok) {
+        // Konvertiere Response zu JSON
         const userData = await response.json();
         
-        // Check if password matches
+        // Überprüfe ob eingegebenes Passwort mit gespeichertem übereinstimmt
         if (userData.password === password) {
           console.log('Login erfolgreich:', userData);
+          
+          // Setze Login-Cookie für Session-Verwaltung
           document.cookie = "logged_in=true; path=/; SameSite=Strict";
           
-          // Store user data in memory (not localStorage due to artifact restrictions)
-          // In a real app, you'd use proper authentication tokens
+          // Speichere Benutzerdaten temporär im Window-Objekt
+          // (Hinweis: In echter App würden Tokens verwendet)
           window.currentUser = userData;
           
-          // Navigate to navigator page
+          // Navigiere zur Hauptseite nach erfolgreichem Login
           navigate('/navigator');
 
-          // Check for admin role
+          // Überprüfe Admin-Berechtigung basierend auf Abteilung
           if (userData.department === 'OE18' || userData.department === 'OE 18') {
             console.log('Admin-Zugang gewährt');
-            // Setze ein Session-Cookie für Admin
+            // Setze Admin-Cookie für erweiterte Berechtigungen
             document.cookie = "isAdmin=true; path=/; SameSite=Strict";
           } else {
             console.log('Benutzer-Zugang gewährt');
@@ -69,48 +85,55 @@ const Login = () => {
 
           return true;
         } else {
+          // Passwort stimmt nicht überein
           setError('Falsches Passwort. Bitte versuchen Sie es erneut.');
           document.cookie = "logged_in=false; path=/; SameSite=Strict";
           return false;
         }
       } else if (response.status === 404) {
+        // Benutzer wurde nicht in der Datenbank gefunden
         setError('Benutzer nicht gefunden. Bitte überprüfen Sie Ihre E-Mail-Adresse.');
         document.cookie = "logged_in=false; path=/; SameSite=Strict";
         return false;
       } else {
+        // Andere HTTP-Fehler
         setError(`Fehler beim Anmelden: ${response.status}`);
         document.cookie = "logged_in=false; path=/; SameSite=Strict";
         return false;
       }
     } catch (err) {
+      // Netzwerk- oder andere unerwartete Fehler
       console.error('Login error:', err);
       setError('Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.');
       return false;
     } finally {
+      // Lade-Status zurücksetzen (wird immer ausgeführt)
       setIsLoading(false);
     }
   };
 
-  // Handle form submission
+  // Funktion zur Behandlung des Formular-Submits
   const handleSubmit = async (e) => {
+    // Verhindere Standard-Formular-Submit (Seiten-Reload)
     e.preventDefault();
     
-    // Validation
+    // Validierung: Überprüfe ob alle Felder ausgefüllt sind
     if (!formData.email || !formData.password) {
       setError('Bitte füllen Sie alle Felder aus.');
       return;
     }
 
+    // Validierung: Überprüfe E-Mail-Format
     if (!isValidEmail(formData.email)) {
       setError('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
       return;
     }
 
-    // Authenticate user
+    // Starte Authentifizierung
     await authenticateUser(formData.email, formData.password);
   };
 
-  // Toggle password visibility
+  // Funktion zum Umschalten der Passwort-Sichtbarkeit
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -118,6 +141,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-box">
+        {/* Header-Bereich mit Icon und Titel */}
         <div className="login-header">
           <div className="login-icon">
             <User size={48} color="#2563eb" />
@@ -126,7 +150,9 @@ const Login = () => {
           <p>Bitte geben Sie Ihre Zugangsdaten ein</p>
         </div>
 
+        {/* Login-Formular */}
         <form className="login-form" onSubmit={handleSubmit}>
+          {/* E-Mail-Eingabefeld */}
           <div className="input-group">
             <label htmlFor="email">
               <User size={16} />
@@ -139,11 +165,12 @@ const Login = () => {
               value={formData.email}
               onChange={handleInputChange}
               placeholder="ihre.email@beispiel.com"
-              disabled={isLoading}
+              disabled={isLoading} // Deaktiviert während Ladevorgang
               required
             />
           </div>
 
+          {/* Passwort-Eingabefeld mit Sichtbarkeits-Toggle */}
           <div className="input-group">
             <label htmlFor="password">
               <Lock size={16} />
@@ -151,7 +178,7 @@ const Login = () => {
             </label>
             <div className="password-input-wrapper">
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? 'text' : 'password'} // Wechselt zwischen Text und Passwort-Typ
                 id="password"
                 name="password"
                 value={formData.password}
@@ -160,6 +187,7 @@ const Login = () => {
                 disabled={isLoading}
                 required
               />
+              {/* Button zum Ein-/Ausblenden des Passworts */}
               <button
                 type="button"
                 className="password-toggle"
@@ -172,6 +200,7 @@ const Login = () => {
             </div>
           </div>
 
+          {/* Fehlermeldung (wird nur angezeigt wenn error State gesetzt ist) */}
           {error && (
             <div className="error-message">
               <AlertCircle size={16} />
@@ -179,10 +208,11 @@ const Login = () => {
             </div>
           )}
 
+          {/* Submit-Button */}
           <div className="login-button">
             <button
               type="submit"
-              disabled={isLoading || !formData.email || !formData.password}
+              disabled={isLoading || !formData.email || !formData.password} // Deaktiviert wenn leer oder ladend
               className={isLoading ? 'loading' : ''}
             >
               {isLoading ? (
@@ -197,6 +227,7 @@ const Login = () => {
           </div>
         </form>
 
+        {/* "Passwort vergessen" Link (aktuell nur Platzhalter) */}
         <div className="link-pw">
           <a href="#" onClick={(e) => e.preventDefault()}>
             Passwort vergessen?
@@ -208,595 +239,3 @@ const Login = () => {
 };
 
 export default Login;
-export const Dashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
-  const [isLoading, setIsLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption 
-
-
-  // Mobile UI States
-  const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
-
-
-  // User bezogene
-  const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null); // Aktuell zu bearbeitender User
-  const [userToDelete, setUserToDelete] = useState(null); // User der gelöscht werden soll
-
-  const [formData, setFormData] = useState({
-    last_name: "",
-    first_name: "",
-    department: "",
-    email: "",
-    password: "",
-  });
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // ========== HELPER FUNCTIONS ==========
-  /**
-   * Sortiert und filtert die User basierend auf Suchbegriff und Sortierungsoption
-   * @param {Array} userList - Liste der zu verarbeitenden User
-   * @param {string} searchTerm - Suchbegriff für Filterung
-   * @param {string} sortBy - Sortierungsoption
-   * @returns {Array} - Gefilterte und sortierte User-Liste
-   */
-  const getFilteredAndSortedUsers = (userList, searchTerm, sortBy) => {
-    // Filtern basierend auf Suchbegriff
-    let filteredUsers = userList.filter((user) => {
-      // Wenn Suchfeld leer ist, alle User anzeigen
-      if (searchTerm === '') return true;
-
-      // Suche in Vor- und Nachnamen (case-insensitive)
-      return user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.last_name.toLowerCase().includes(searchTerm.toLowerCase());
-    });
-
-    // Sortieren basierend auf ausgewählter Option
-    switch (sortBy) {
-      case 'Alphabetisch A-Z':
-        // Sortierung nach Nachnamen aufsteigend (A-Z)
-        return filteredUsers.sort((a, b) => a.last_name.toLowerCase().localeCompare(b.last_name.toLowerCase())
-        );
-
-      case 'Alphabetisch Z-A':
-        // Sortierung nach Nachnamen absteigend (Z-A)
-        return filteredUsers.sort((a, b) => b.last_name.toLowerCase().localeCompare(a.last_name.toLowerCase())
-        );
-
-      case 'Neueste zuerst':
-      default:
-        // Sortierung nach ID absteigend (neueste zuerst)
-        return filteredUsers.sort((a, b) => a.id - b.id);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/");
-      const data = await response.json();
-      setUsers(data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const handleCreateUser = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // URL und HTTP-Methode je nach Aktion (Erstellen/Bearbeiten) bestimmen
-      const url = editingUser
-        ? `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${editingUser.email}/` // PUT für Update
-        : "https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/create/"; // POST für Erstellung
-
-      const method = editingUser ? "PUT" : "POST";
-
-      // API-Call ausführen
-      const response = await fetch(url, {
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-
-        if (editingUser) {
-          // Bei Bearbeitung: User in der Liste aktualisieren
-          setUsers((prevUsers) => prevUsers.map((user) => user.email === editingUser.email ? userData : user
-          )
-          );
-          console.log("User erfolgreich bearbeitet:", userData);
-        } else {
-          // Bei Erstellung: User zur Liste hinzufügen
-          setUsers((prevData) => [...prevData, userData]);
-          console.log("User erfolgreich erstellt:", userData);
-        }
-
-        //Modal schließen und Formular zurücksetzen
-        handleCloseModal();
-      } else {
-        const errorData = await response.json();
-        console.error("Fehler beim Speichern des Users:", errorData);
-      }
-    } catch (error) {
-      console.error("Netzwerkfehler:", error);
-      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Löscht einen User permanent
-   */
-  const handleConfirmDelete = async () => {
-    if (!userToDelete) return;
-
-    setIsLoading(true);
-    try {
-      const response = await fetch(
-        `https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/${userToDelete.email}/`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (response.ok) {
-        // User aus der lokalen Liste entfernen
-        setUsers((prevUsers) => prevUsers.filter((user) => user.email !== userToDelete.email)
-        );
-        console.log("User erfolgreich gelöscht:", userToDelete);
-
-        // Lösch-Modal schließen
-        setIsDeleteModalOpen(false);
-        setUserToDelete(null);
-      } else {
-        const errorData = await response.json();
-        console.error("Fehler beim Löschen des Users:", errorData);
-      }
-    } catch (error) {
-      console.error("Netzwerkfehler:", error);
-      alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /**
-   * Behandelt Änderungen in Formularfeldern
-   */
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  /**
-   * Behandelt Änderungen in der Sortierungsauswahl
-   * @param {Event} e - Select Change Event
-   */
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  /**
-   * Öffnet das Bearbeitungs-Modal mit vorausgefüllten Daten
-   */
-  const handleEditUser = (user) => {
-    setEditingUser(user); // User für Bearbeitung markieren
-
-
-    // Formular mit User-Daten füllen
-    setFormData({
-      last_name: user.last_name,
-      first_name: user.first_name,
-      department: user.department,
-      email: user.email,
-      password: user.password,
-    });
-
-    setIsModalOpen(true); // Modal öffnen
-  };
-
-  /**
-   * Öfnnet das Löschbestätigungs-Modal
-   */
-  const handleDeleteClick = (user) => {
-    setUserToDelete(user);
-    setIsDeleteModalOpen(true);
-  };
-
-  /**
-   * Schließt das Erstellen/Bearbeiten-Modal und setzt das Formular zurück
-   */
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setEditingUser(null); // Bearbeitungsmodus beenden
-
-
-    // Formular auf Standardwerte zurücksetzen
-    setFormData({
-      last_name: "",
-      first_name: "",
-      department: "",
-      email: "",
-      password: "",
-    });
-  };
-
-  /**
-   * Schlie0t das Löschbestätigungs-Modal
-   */
-  const handleCloseDeleteModal = () => {
-    setIsDeleteModalOpen(false);
-    setUserToDelete(null);
-  };
-
-  // =========== MOBILE SPECIFIC HANDLERS =============
-  /**
-   * Toggle Card Details
-   */
-  const toggleCardExpansion = (userId) => {
-    const newExpanded = new Set(expandedCards);
-    if (newExpanded.has(userId)) {
-      newExpanded.delete(userId);
-    } else {
-      newExpanded.add(userId);
-    }
-    setExpandedCards(newExpanded);
-  };
-
-  /**
-   * Verhindert Event Bubbling für Action Buttons
-   * @param {Event} e - Click Event
-   */
-  const handleActionClick = (e, action, user) => {
-    e.stopPropagation(); // Verhindert Card Toggle
-
-    if (action === 'edit') {
-      handleEditUser(user);
-    } else if (action === 'delete') {
-      handleDeleteClick(user);
-    }
-  };
-
-  // ========== COMPUTED VALUES ==========
-  // Gefilterte und sortierte User für die Anzeige
-  const filteredAndSortedUsers = getFilteredAndSortedUsers(users, search, sortOption);
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
-
-  return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
-        <div className="dashboard-card">
-          <div className="content-header">
-            <div className="header-left">
-              <button
-                className="btn"
-                id="btn-back"
-                onClick={() => navigate("/navigator")}
-                aria-label="Zurück"
-              >
-                <ArrowLeft size={24} />
-              </button>
-              <h1 className="dashboard-title"> Admin Dashboard</h1>
-            </div>
-
-            <div className="header-actions">
-              <div className="search-con">
-                <Search
-                  size={16}
-                  style={{
-                    position: 'absolute',
-                    left: '0.75rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: '#9ca3af'
-                  }} />
-                <input
-                  type="text"
-                  placeholder="Suche nach Benutzern..."
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="search-inp" />
-              </div>
-
-              {/* Sort Dropdown */}
-              <div className="dropd">
-                <select
-                  className="select-option"
-                  value={sortOption}
-                  onChange={handleSortChange}
-                >
-                  <option value="Neueste zuerst">Neueste zuerst</option>
-                  <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
-                  <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
-                </select>
-              </div>
-
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="btn"
-                id="btn-blue"
-              >
-                <Plus size={16} />
-                Neuer Benutzer
-              </button>
-            </div>
-          </div>
-
-          <div className="table-container">
-            <table className="dashboard-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Vorname</th>
-                  <th>Nachname</th>
-                  <th>E-Mail</th>
-                  <th>Abteilung</th>
-                  <th>Aktionen</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredAndSortedUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.id}</td>
-                    <td>{user.first_name}</td>
-                    <td>{user.last_name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.department}</td>
-                    <td className="action-buttons">
-                      {/* Bearbeiten-Button */}
-                      <button
-                        className="action-btn edit-btn"
-                        onClick={() => handleEditUser(user)}
-                        aria-label="User bearbeiten"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      {/* Löschen-Button */}
-                      <button
-                        className="action-btn delete-btn"
-                        onClick={() => handleDeleteClick(user)}
-                        aria-label="User löschen"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Card View */}
-          <div className="mobile-cards">
-            {filteredAndSortedUsers.map((user) => (
-              <div
-                key={user.id}
-                className="mobile-card"
-                onClick={() => toggleCardExpansion(user.id)}
-              >
-                <div className="mobile-card-header">
-                  <div className="mobile-card-title">{user.last_name}</div>
-                  <div className="mobile-card-serial">{user.first_name}</div>
-                  <div className="mobile-card-actions">
-                    <button
-                      className="action-btn edit-btn"
-                      onClick={(e) => handleActionClick(e, 'edit', user)}
-                      title="Bearbeiten"
-                    >
-                      <Edit size={12} />
-                    </button>
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={(e) => handleActionClick(e, 'delete', user)}
-                    >
-                      <Trash size={12} />
-                    </button>
-                    {expandedCards.has(user.id) ? (
-                      <ChevronUp size={16} />
-                    ) : (
-                      <ChevronDown size={16} />
-                    )}
-                  </div>
-                </div>
-
-                {/* Expanded Details */}
-                <div className={`mobile-card-details ${expandedCards.has(user.id) ? 'expanded' : ''}`}>
-                  <div className="mobile-detail-row">
-                    <span className="mobile-detail-label">ID:</span>
-                    <span className="mobile-detail-value">{user.id}</span>
-                  </div>
-                  <div className="mobile-detail-row">
-                    <span className="mobile-detail-label">E-Mail:</span>
-                    <span className="mobile-detail-value">{user.email}</span>
-                  </div>
-                  <div className="mobile-detail-row">
-                    <span className="mobile-detail-label">Abteilung:</span>
-                    <span className="mobile-detail-value">{user.department}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Empty State */}
-          {filteredAndSortedUsers.length === 0 && (
-            <div style={{
-              textAlign: 'center',
-              padding: '3rem',
-              color: '#6b7280'
-            }}>
-              {search ? 'Keine User gefunden.' : 'Noch keine User vorhanden'}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ========== User MODAL (Erstellen/Bearbeiten) ========== */}
-      {isModalOpen && (
-        <div className="dash-modal-overlay">
-          <div className="dash-modal">
-            <h2 className="modal-title">
-              {editingUser ? "User bearbeiten" : "Neuen Benutzer anlegen"}
-            </h2>
-            <form onSubmit={handleCreateUser}>
-              <div className="form-group">
-                <label className="form-label">Vorname</label>
-                <input
-                  type="text"
-                  name="first_name"
-                  value={formData.first_name}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Vorname eingeben"
-                  required />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Nachname</label>
-                <input
-                  type="text"
-                  name="last_name"
-                  value={formData.last_name}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Nachname eingeben"
-                  required />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Abteilung</label>
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="Abteilung angeben"
-                  required />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">E-Mail</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="form-input"
-                  placeholder="E-Mail eingeben"
-                  required />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Passwort</label>
-                <div className="password-input-wrapper">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="form-input"
-                    placeholder="Passwort vergeben"
-                    required />
-                  <button
-                    type="button"
-                    className="password-toggle"
-                    onClick={togglePasswordVisibility}
-                    disabled={isLoading}
-                    aria-label={showPassword ? 'Passwort verbergen' : 'Passwort anzeigen'}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </div>
-
-              {/*            <div className="form-group">
-                                  <label className="form-label">Rolle</label>
-                                  <select name="rolle" className="form-select">
-                                    <option value="Admin">Admin</option>
-                                    <option value="Moderator">Moderator</option>
-                                    <option value="Benutzer">Benutzer</option>
-                                  </select>
-                                </div>*/}
-
-              <div className="dash-modal-footer">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="btn"
-                  id="btn-cancel"
-                  disabled={isLoading}
-                >
-                  Abbrechen
-                </button>
-                <button
-                  type="submit"
-                  className="btn"
-                  id="btn-blue"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Speichern...' : 'Speichern'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ========== LÖSCH-BESTÄTIGUNGS MODAL ========== */}
-      {isDeleteModalOpen && (
-        <div className="dash-modal-overlay">
-          <div className="dash-modal delete-modal">
-            <h2 className="modal-title">User löschen</h2>
-
-            {/* Bestätigungstext mit User-Details */}
-            <p className="delete-confirmation-text">
-              Sind Sie sicher, dass Sie den User "{userToDelete?.first_name} {userToDelete?.last_name}"
-              (E-Mail: {userToDelete?.email}) löschen möchten?
-            </p>
-
-            {/* Modal Footer mit Abbrechen/Bestätigen */}
-            <div className="dash-modal-footer">
-              <button
-                type="button"
-                onClick={handleCloseDeleteModal}
-                className="btn"
-                id="btn-cancel"
-                disabled={isLoading}
-              >
-                Abbrechen
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmDelete}
-                className="btn delete-confirm-btn"
-                disabled={isLoading}
-              >
-                {isLoading ? 'Löschen...' : 'Ja, löschen'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};

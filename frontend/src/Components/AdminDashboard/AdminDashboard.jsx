@@ -17,22 +17,29 @@ import {
 } from "lucide-react";
 
 const AdminDashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
+  // ========== STATE MANAGEMENT ==========
+  // Modal-States für UI-Kontrolle
+  const [isModalOpen, setIsModalOpen] = useState(false); // User erstellen/bearbeiten Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
-  const [isLoading, setIsLoading] = useState(false);
-  const [search, setSearch] = useState('');
-  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption 
+  const [showPassword, setShowPassword] = useState(false); // Passwort anzeigen/verbergen Toggle
+  
+  // Navigation Hook für Routing zwischen Seiten
+  const navigate = useNavigate();
+  
+  // Loading und UI States
+  const [isLoading, setIsLoading] = useState(false); // Zeigt Loading-Spinner während API-Calls
+  const [search, setSearch] = useState(''); // Suchbegriff für User-Filterung
+  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Aktuelle Sortierungsoption
 
-  // Mobile UI States
-  const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
+  // Mobile UI States - für responsive Design
+  const [expandedCards, setExpandedCards] = useState(new Set()); // Verwaltet welche Karten auf Mobile erweitert sind
 
-  // User bezogene
-  const [users, setUsers] = useState([]);
-  const [editingUser, setEditingUser] = useState(null); // Aktuell zu bearbeitender User
+  // User-Management States
+  const [users, setUsers] = useState([]); // Liste aller User vom Backend
+  const [editingUser, setEditingUser] = useState(null); // Aktuell zu bearbeitender User (null = Erstellungsmodus)
   const [userToDelete, setUserToDelete] = useState(null); // User der gelöscht werden soll
 
+  // Formular-Datenstruktur für User-Eingaben
   const [formData, setFormData] = useState({
     last_name:"",
     first_name:"",
@@ -41,6 +48,8 @@ const AdminDashboard = () => {
     password:"",
   });
 
+  // ========== LIFECYCLE HOOKS ==========
+  // Lädt User-Daten beim ersten Rendern der Komponente
   useEffect(() => {
       fetchUsers();
     }, []);
@@ -48,23 +57,24 @@ const AdminDashboard = () => {
   // ========== HELPER FUNCTIONS ==========
   /**
    * Sortiert und filtert die User basierend auf Suchbegriff und Sortierungsoption
+   * Diese Funktion ist das Herzstück der Tabellen-Logik und kombiniert Suche + Sortierung
    * @param {Array} userList - Liste der zu verarbeitenden User
    * @param {string} searchTerm - Suchbegriff für Filterung
    * @param {string} sortBy - Sortierungsoption
    * @returns {Array} - Gefilterte und sortierte User-Liste
    */
   const getFilteredAndSortedUsers = (userList, searchTerm, sortBy) => {
-    // Filtern basierend auf Suchbegriff
+    // SCHRITT 1: Filtern basierend auf Suchbegriff
     let filteredUsers = userList.filter((user) => {
       // Wenn Suchfeld leer ist, alle User anzeigen
       if (searchTerm === '') return true;
       
-      // Suche in Vor- und Nachnamen (case-insensitive)
+      // Suche in Vor- und Nachnamen (case-insensitive für bessere UX)
       return user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
              user.last_name.toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    // Sortieren basierend auf ausgewählter Option
+    // SCHRITT 2: Sortieren basierend on ausgewählter Option
     switch (sortBy) {
       case 'Alphabetisch A-Z':
         // Sortierung nach Nachnamen aufsteigend (A-Z)
@@ -80,24 +90,35 @@ const AdminDashboard = () => {
       
       case 'Neueste zuerst':
       default:
-        // Sortierung nach ID absteigend (neueste zuerst)
+        // Sortierung nach ID absteigend (neueste User haben höhere IDs)
         return filteredUsers.sort((a, b) => a.id - b.id);
     }
   };  
 
+  // ========== API FUNCTIONS ==========
+  /**
+   * Lädt alle User vom Backend
+   * Wird beim Komponenten-Mount und nach CRUD-Operationen aufgerufen
+   */
   const fetchUsers = async () => {
     try {
       const response = await fetch("https://inventarisierungstool-9a0bf864c2b7.herokuapp.com/api/users/");
       const data = await response.json();
-      setUsers(data);
+      setUsers(data); // User-State mit Backend-Daten aktualisieren
     } catch (err) {
       console.log(err);
+      // TODO: Bessere Error-Behandlung für Benutzer
     }
   };
 
+  /**
+   * Erstellt einen neuen User oder aktualisiert einen bestehenden
+   * Diese Funktion behandelt sowohl CREATE als auch UPDATE Operationen
+   * @param {Event} e - Form Submit Event
+   */
   const handleCreateUser = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault(); // Verhindert Standard-Formular-Reload
+    setIsLoading(true); // Loading-State für UI-Feedback
 
     try {
       // URL und HTTP-Methode je nach Aktion (Erstellen/Bearbeiten) bestimmen
@@ -107,7 +128,7 @@ const AdminDashboard = () => {
 
       const method = editingUser ? "PUT" : "POST";
 
-      // API-Call ausführen
+      // API-Call mit JSON-Daten ausführen
       const response = await fetch(url, {
         method: method,
         headers: {
@@ -120,7 +141,7 @@ const AdminDashboard = () => {
         const userData = await response.json();
 
         if (editingUser) {
-          // Bei Bearbeitung: User in der Liste aktualisieren
+          // EDIT-Modus: User in der lokalen Liste aktualisieren (optimistische Aktualisierung)
           setUsers((prevUsers) => 
             prevUsers.map((user) =>
               user.email === editingUser.email ? userData : user
@@ -128,30 +149,32 @@ const AdminDashboard = () => {
           );
           console.log("User erfolgreich bearbeitet:", userData);
         } else {
-          // Bei Erstellung: User zur Liste hinzufügen
+          // CREATE-Modus: Neuen User zur Liste hinzufügen
           setUsers((prevData) => [...prevData, userData]);
           console.log("User erfolgreich erstellt:", userData);
         }
 
-        //Modal schließen und Formular zurücksetzen
+        // UI zurücksetzen nach erfolgreichem Speichern
         handleCloseModal();
       } else {
         const errorData = await response.json();
         console.error("Fehler beim Speichern des Users:", errorData);
+        // TODO: User-freundliche Error-Anzeige
       }
     } catch (error) {
         console.error("Netzwerkfehler:", error);
         alert("Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung");
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Loading-State zurücksetzen
     }
   };
 
   /**
-   * Löscht einen User permanent
+   * Löscht einen User permanent aus dem System
+   * Wird nach Bestätigung im Lösch-Modal aufgerufen
    */
   const handleConfirmDelete = async () => {
-    if (!userToDelete) return;
+    if (!userToDelete) return; // Sicherheitscheck
 
     setIsLoading(true);
     try {
@@ -163,13 +186,13 @@ const AdminDashboard = () => {
       );
 
       if (response.ok) {
-        // User aus der lokalen Liste entfernen
+        // User aus der lokalen Liste entfernen (optimistische Aktualisierung)
         setUsers((prevUsers) => 
           prevUsers.filter((user) => user.email !== userToDelete.email)
         );
         console.log("User erfolgreich gelöscht:", userToDelete);
 
-        // Lösch-Modal schließen
+        // Lösch-Modal schließen und State zurücksetzen
         setIsDeleteModalOpen(false);
         setUserToDelete(null);
       } else {
@@ -184,11 +207,14 @@ const AdminDashboard = () => {
     }
   };
 
+  // ========== EVENT HANDLERS ==========
   /**
    * Behandelt Änderungen in Formularfeldern
+   * Generischer Handler für alle Input-Felder im User-Formular
    */ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // Spread-Operator für immutable State Updates
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -201,15 +227,17 @@ const AdminDashboard = () => {
    */
   const handleSortChange = (e) => {
     setSortOption(e.target.value);
+    // Die Tabelle wird automatisch durch die computed values neu gerendert
   };
 
   /**
    * Öffnet das Bearbeitungs-Modal mit vorausgefüllten Daten
+   * Setzt die Komponente in den "Edit-Modus"
    */
   const handleEditUser = (user) => {
     setEditingUser(user); // User für Bearbeitung markieren
 
-    // Formular mit User-Daten füllen
+    // Formular mit User-Daten vorausfüllen für bessere UX
     setFormData({
       last_name: user.last_name,
       first_name: user.first_name,
@@ -222,21 +250,23 @@ const AdminDashboard = () => {
   };
 
   /**
-   * Öfnnet das Löschbestätigungs-Modal
+   * Öffnet das Löschbestätigungs-Modal
+   * Zeigt Sicherheitsabfrage vor dem endgültigen Löschen
    */
   const handleDeleteClick = (user) => {
-    setUserToDelete(user);
-    setIsDeleteModalOpen(true);
+    setUserToDelete(user); // User für Löschung markieren
+    setIsDeleteModalOpen(true); // Bestätigungs-Modal öffnen
   };
 
   /**
    * Schließt das Erstellen/Bearbeiten-Modal und setzt das Formular zurück
+   * Wichtig: Alle States werden zurückgesetzt für saubere UI
    */
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingUser(null); // Bearbeitungsmodus beenden
 
-    // Formular auf Standardwerte zurücksetzen
+    // Formular auf Standardwerte zurücksetzen (wichtig für nächste Nutzung)
     setFormData({
       last_name:"",
       first_name:"",
@@ -247,7 +277,7 @@ const AdminDashboard = () => {
   };
 
   /**
-   * Schlie0t das Löschbestätigungs-Modal
+   * Schließt das Löschbestätigungs-Modal
    */
   const handleCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
@@ -256,25 +286,28 @@ const AdminDashboard = () => {
 
   // =========== MOBILE SPECIFIC HANDLERS =============
   /**
-   * Toggle Card Details
+   * Toggle Card Details für Mobile Ansicht
+   * Verwaltet welche User-Karten erweitert/kollabiert sind
    */
   const toggleCardExpansion = (userId) => {
     const newExpanded = new Set(expandedCards);
     if (newExpanded.has(userId)) {
-      newExpanded.delete(userId);
+      newExpanded.delete(userId); // Karte schließen
     } else {
-      newExpanded.add(userId);
+      newExpanded.add(userId); // Karte öffnen
     }
     setExpandedCards(newExpanded);
   };
 
   /**
-   * Verhindert Event Bubbling für Action Buttons
+   * Verhindert Event Bubbling für Action Buttons in Mobile Cards
+   * Ohne diese Funktion würde ein Klick auf Edit/Delete auch die Karte togglen
    * @param {Event} e - Click Event
    */
   const handleActionClick = (e, action, user) => {
     e.stopPropagation(); // Verhindert Card Toggle
     
+    // Action entsprechend weiterleiten
     if (action === 'edit') {
       handleEditUser(user);
     } else if (action === 'delete') {
@@ -284,19 +317,23 @@ const AdminDashboard = () => {
 
   // ========== COMPUTED VALUES ==========
   // Gefilterte und sortierte User für die Anzeige
+  // Diese Werte werden bei jeder State-Änderung neu berechnet (React Re-rendering)
   const filteredAndSortedUsers = getFilteredAndSortedUsers(users, search, sortOption);
 
-  // Toggle password visibility
+  // Toggle password visibility - Simple UI State Funktion
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  // ========== RENDER LOGIC ==========
   return (
     <div className="dashboard-container">
       <div className="main-content">
         <div className="content-wrapper">
+          {/* ========== HEADER SECTION ========== */}
           <div className="content-header">
             <div className="header-left">
+              {/* Zurück-Button für Navigation */}
               <button
                 className="btn"
                 id="btn-back"
@@ -308,7 +345,9 @@ const AdminDashboard = () => {
               <h1 className="dashboard-title"> Admin Dashboard</h1>
             </div>
 
+            {/* ========== HEADER ACTIONS (Suche, Sortierung, Neuer User) ========== */}
             <div className="header-actions">
+            {/* Such-Input mit Icon */}
             <div className="search-con">
               <Search 
                 size={16} 
@@ -323,12 +362,12 @@ const AdminDashboard = () => {
             <input
               type="text"
               placeholder="Suche nach Benutzern..."
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => setSearch(e.target.value)} // Live-Suche
               className="search-inp"
             />
             </div>
             
-            {/* Sort Dropdown */}
+            {/* Sortierungs-Dropdown */}
             <div className="dropd">
             <select
                   className="select-option"
@@ -341,8 +380,9 @@ const AdminDashboard = () => {
             </select>
             </div>
 
+            {/* Neuer User Button */}
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => setIsModalOpen(true)} // Öffnet Modal im CREATE-Modus
               className="btn"
               id="btn-blue"
             >
@@ -352,6 +392,7 @@ const AdminDashboard = () => {
             </div>
           </div>
 
+          {/* ========== DESKTOP TABLE VIEW ========== */}
           <div className="table-con">
             <table className="dashboard-table">
               <thead>
@@ -365,6 +406,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
+                {/* Rendering der gefilterten und sortierten User */}
                 {filteredAndSortedUsers.map((user) => (
                   <tr key={user.id}>
                     <td>{user.id}</td>
@@ -396,18 +438,21 @@ const AdminDashboard = () => {
             </table>
           </div>
           
-          {/* Mobile Card View */}
+          {/* ========== MOBILE CARD VIEW ========== 
+              Responsive Alternative zur Tabelle für kleine Bildschirme */}
           <div className="mobile-cards">
                 {filteredAndSortedUsers.map((user) => (
                   <div
                     key={user.id}
                     className="mobile-card"
-                    onClick={() => toggleCardExpansion(user.id)}
+                    onClick={() => toggleCardExpansion(user.id)} // Karte erweitern/schließen
                   >
+                    {/* Card Header - immer sichtbar */}
                     <div className="mobile-card-header">
                       <div className="mobile-card-title">{user.last_name}</div>
                       <div className="mobile-card-serial">{user.first_name}</div>
                       <div className="mobile-card-actions">
+                        {/* Action Buttons mit Event Bubbling Prevention */}
                         <button
                           className="action-btn edit-btn"
                           onClick={(e) => handleActionClick(e, 'edit', user)}
@@ -421,6 +466,7 @@ const AdminDashboard = () => {
                         >
                           <Trash size={12} />
                         </button>
+                        {/* Chevron Icon zeigt Expansion-State */}
                         {expandedCards.has(user.id) ? (
                           <ChevronUp size={16} />
                         ) : (
@@ -429,7 +475,7 @@ const AdminDashboard = () => {
                       </div>
                     </div>
 
-                  {/* Expanded Details */}
+                  {/* Expanded Details - nur sichtbar wenn Karte erweitert */}
                   <div className={`mobile-card-details ${expandedCards.has(user.id) ? 'expanded' : ''}`}>
                     <div className="mobile-detail-row">
                       <span className="mobile-detail-label">ID:</span>
@@ -447,7 +493,8 @@ const AdminDashboard = () => {
                   </div>
                 ))}
           </div>
-            {/* Empty State */}
+            {/* ========== EMPTY STATE ========== 
+                Zeigt hilfreiche Nachricht wenn keine User gefunden werden */}
             {filteredAndSortedUsers.length === 0 && (
               <div style={{
                 textAlign: 'center',
@@ -460,14 +507,17 @@ const AdminDashboard = () => {
         </div>
       </div>
 
-      {/* ========== User MODAL (Erstellen/Bearbeiten) ========== */}
+      {/* ========== User MODAL (Erstellen/Bearbeiten) ========== 
+          Wiederverwendbares Modal für CREATE und UPDATE Operationen */}
       {isModalOpen && (
         <div className="dash-modal-overlay">
           <div className="dash-modal">
+            {/* Dynamischer Titel basierend auf Modus */}
             <h2 className="modal-title">
               {editingUser ? "User bearbeiten" : "Neuen Benutzer anlegen"}
             </h2>
             <form onSubmit={handleCreateUser}>
+            {/* Formular-Felder mit Controlled Components */}
             <div className="form-group">
               <label className="form-label">Vorname</label>
               <input
@@ -520,6 +570,7 @@ const AdminDashboard = () => {
               />
             </div>
 
+            {/* Passwort-Feld mit Sichtbarkeits-Toggle */}
             <div className="form-group">
               <label className="form-label">Passwort</label>
               <div className="password-input-wrapper">
@@ -545,7 +596,8 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-{/*            <div className="form-group">
+{/*          TODO: Rollen-Feature für zukünftige Entwicklung
+            <div className="form-group">
               <label className="form-label">Rolle</label>
               <select name="rolle" className="form-select">
                 <option value="Admin">Admin</option>
@@ -554,13 +606,14 @@ const AdminDashboard = () => {
               </select>
             </div>*/}
 
+            {/* Modal Footer mit Action Buttons */}
             <div className="dash-modal-footer">
               <button
                 type="button"
                 onClick={handleCloseModal}
                 className="btn"
                 id="btn-cancel"
-                disabled={isLoading}
+                disabled={isLoading} // Verhindert Interaktion während Loading
               >
                 Abbrechen
               </button>
@@ -570,6 +623,7 @@ const AdminDashboard = () => {
                 id="btn-blue"
                 disabled={isLoading}
               >
+                {/* Dynamischer Button-Text mit Loading-State */}
                 {isLoading ? 'Speichern...' : 'Speichern'}
               </button>
             </div>
@@ -578,13 +632,14 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* ========== LÖSCH-BESTÄTIGUNGS MODAL ========== */}
+      {/* ========== LÖSCH-BESTÄTIGUNGS MODAL ========== 
+          Sicherheitsabfrage vor permanentem Löschen */}
       {isDeleteModalOpen && (
         <div className="dash-modal-overlay">
           <div className="dash-modal delete-modal">
             <h2 className="modal-title">User löschen</h2>
 
-            {/* Bestätigungstext mit User-Details */}
+            {/* Bestätigungstext mit User-Details für Klarheit */}
             <p className="delete-confirmation-text">
               Sind Sie sicher, dass Sie den User "{userToDelete?.first_name} {userToDelete?.last_name}" 
               (E-Mail: {userToDelete?.email}) löschen möchten?
@@ -603,7 +658,7 @@ const AdminDashboard = () => {
               </button>
               <button
                 type="button"
-                onClick={handleConfirmDelete}
+                onClick={handleConfirmDelete} // Führt tatsächliche Löschung aus
                 className="btn delete-confirm-btn"
                 disabled={isLoading}
               >
