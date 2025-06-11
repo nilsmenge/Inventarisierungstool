@@ -214,6 +214,7 @@
         width: 100%;
         max-width: 350px;
         height: 350px;
+        margin-bottom: 2rem;
     }
     
     .chart-title {
