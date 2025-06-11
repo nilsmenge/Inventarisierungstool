@@ -384,6 +384,7 @@
     .dropd {
         padding: 0.5rem 0.75rem;
         font-size: 0.75rem;
+        justify-content: center;
     }
 }
 
@@ -406,7 +407,8 @@
     }
 
     .dropd,
-    .btn {
+    .btn
+    #btn-blue {
         justify-content: center;
     }
 }
