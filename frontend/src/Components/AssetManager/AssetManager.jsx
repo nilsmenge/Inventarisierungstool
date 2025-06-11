@@ -20,7 +20,6 @@ import {
 const AssetManager = () => {
   // ========== STATE MANAGEMENT ==========
   // Navigation und UI States
-  const [activeIndex, setActiveIndex] = useState(0); // Aktiver Menüpunkt in der Sidebar
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal für Erstellen/Bearbeiten
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
@@ -28,7 +27,6 @@ const AssetManager = () => {
   const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption
   
   // Mobile UI States
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar für mobile
   const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
   
   // Asset-bezogene States
@@ -287,20 +285,6 @@ const AssetManager = () => {
   };
 
   // ========== MOBILE SPECIFIC HANDLERS ==========
-  /**
-   * Toggle Sidebar für Mobile
-   */
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  /**
-   * Schließt Sidebar wenn Overlay geklickt wird
-   */
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
-
   /**
    * Toggle Card Details
    * @param {number} assetId - ID des Assets
