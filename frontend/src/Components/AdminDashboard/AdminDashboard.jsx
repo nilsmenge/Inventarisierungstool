@@ -29,7 +29,7 @@ const AdminDashboard = () => {
   // Loading und UI States
   const [isLoading, setIsLoading] = useState(false); // Zeigt Loading-Spinner während API-Calls
   const [search, setSearch] = useState(''); // Suchbegriff für User-Filterung
-  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Aktuelle Sortierungsoption
+  const [sortOption, setSortOption] = useState('ID absteigend'); // Aktuelle Sortierungsoption
 
   // Mobile UI States - für responsive Design
   const [expandedCards, setExpandedCards] = useState(new Set()); // Verwaltet welche Karten auf Mobile erweitert sind
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
           b.last_name.toLowerCase().localeCompare(a.last_name.toLowerCase())
         );
       
-      case 'Neueste zuerst':
+      case 'ID absteigend':
       default:
         // Sortierung nach ID absteigend (neueste User haben höhere IDs)
         return filteredUsers.sort((a, b) => a.id - b.id);
@@ -98,7 +98,6 @@ const AdminDashboard = () => {
   // ========== API FUNCTIONS ==========
   /**
    * Lädt alle User vom Backend
-   * Wird beim Komponenten-Mount und nach CRUD-Operationen aufgerufen
    */
   const fetchUsers = async () => {
     try {
@@ -140,7 +139,7 @@ const AdminDashboard = () => {
         const userData = await response.json();
 
         if (editingUser) {
-          // EDIT-Modus: User in der lokalen Liste aktualisieren (optimistische Aktualisierung)
+          // EDIT-Modus: User in der lokalen Liste aktualisieren
           setUsers((prevUsers) => 
             prevUsers.map((user) =>
               user.email === editingUser.email ? userData : user
@@ -158,7 +157,6 @@ const AdminDashboard = () => {
       } else {
         const errorData = await response.json();
         console.error("Fehler beim Speichern des Users:", errorData);
-        // TODO: User-freundliche Error-Anzeige
       }
     } catch (error) {
         console.error("Netzwerkfehler:", error);
@@ -185,7 +183,7 @@ const AdminDashboard = () => {
       );
 
       if (response.ok) {
-        // User aus der lokalen Liste entfernen (optimistische Aktualisierung)
+        // User aus der lokalen Liste entfernen
         setUsers((prevUsers) => 
           prevUsers.filter((user) => user.email !== userToDelete.email)
         );
@@ -373,7 +371,7 @@ const AdminDashboard = () => {
                   value={sortOption}
                   onChange={handleSortChange}
                 >
-                  <option value="Neueste zuerst">Neueste zuerst</option>
+                  <option value="ID absteigend">ID absteigend</option>
                   <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
             </select>

@@ -67,7 +67,6 @@ const Login = () => {
           document.cookie = "logged_in=true; path=/; SameSite=Strict";
           
           // Speichere Benutzerdaten temporär im Window-Objekt
-          // (Hinweis: In echter App würden Tokens verwendet)
           window.currentUser = userData;
           
           // Navigiere zur Hauptseite nach erfolgreichem Login
