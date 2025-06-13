@@ -69,7 +69,7 @@ describe('QrBarcodeScanner', () => {
     vi.resetAllMocks()
   })
 
-  it('should render scanner interface correctly', () => {
+  it('sollte die Scanner-Oberfläche korrekt rendern', () => {
     render(
       <TestWrapper>
         <QrBarcodeScanner />
@@ -83,7 +83,7 @@ describe('QrBarcodeScanner', () => {
     expect(screen.getByText('QR-Code scannen')).toBeInTheDocument()
   })
 
-  it('should switch between QR and Barcode modes', () => {
+  it('sollte zwischen QR- und Barcode-Modi wechseln', () => {
     render(
       <TestWrapper>
         <QrBarcodeScanner />
@@ -106,7 +106,7 @@ describe('QrBarcodeScanner', () => {
     expect(screen.getByText('Barcode scannen')).toBeInTheDocument()
   })
 
-  it('should handle successful asset fetch and display asset modal', async () => {
+  it('sollte erfolgreiches Asset-Abrufen handhaben und Asset-Modal anzeigen', async () => {
     // Mock für erfolgreiche API-Antwort
     const mockAssetData = {
       id: 1,
@@ -150,7 +150,7 @@ describe('QrBarcodeScanner', () => {
     )
   })
 
-  it('should handle asset not found and show create modal', async () => {
+  it('sollte "Asset nicht gefunden" handhaben und Erstellungs-Modal anzeigen', async () => {
     // Mock für 404-Antwort (Asset nicht gefunden)
     fetchMock.mockResolvedValueOnce({
       ok: false,
@@ -173,10 +173,9 @@ describe('QrBarcodeScanner', () => {
     )
 
     // Bei 404 sollte das Create-Modal geöffnet werden
-    // (Diese Logik würde in der echten Komponente das Modal öffnen)
   })
 
-  it('should handle network errors gracefully', async () => {
+  it('sollte Netzwerkfehler behandeln', async () => {
     // Mock für Netzwerkfehler
     fetchMock.mockRejectedValueOnce(new Error('Network error'))
 
@@ -200,7 +199,7 @@ describe('QrBarcodeScanner', () => {
     )
   })
 
-  it('should navigate back when back button is clicked', () => {
+  it('sollte zurück navigieren wenn Zurück-Button geklickt wird', () => {
     render(
       <TestWrapper>
         <QrBarcodeScanner />
@@ -213,7 +212,7 @@ describe('QrBarcodeScanner', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/navigator')
   })
 
-  it('should disable mode buttons while scanning', async () => {
+  it('sollte Modus-Buttons während des Scannens deaktivieren', async () => {
     // Mock für getUserMedia
     const mockStream = {
       getTracks: vi.fn(() => [{ stop: vi.fn() }])
