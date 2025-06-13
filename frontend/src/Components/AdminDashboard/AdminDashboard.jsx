@@ -107,7 +107,6 @@ const AdminDashboard = () => {
       setUsers(data); // User-State mit Backend-Daten aktualisieren
     } catch (err) {
       console.log(err);
-      // TODO: Bessere Error-Behandlung für Benutzer
     }
   };
 
