@@ -130,6 +130,8 @@ const QrBarcodeScanner = () => {
   // ===== SCAN HANDLING =====
   
   // Verarbeitung des Scan-Ergebnisses
+  // Wir aufgerunfen, wenn ein QR/Barcode erfolgreich gelesen wurde
+  // Speichert das Ergebnis und fragt das Asset beim Server ab
   const handleScanResult = (scanResult) => {
     console.log("Scan-Ergebnis:", scanResult);
     setResult(scanResult);
@@ -140,11 +142,11 @@ const QrBarcodeScanner = () => {
 
   // Scanner vorbereiten - Kamera aktivieren und Countdown starten
   const prepareScanner = async () => {
-    // Fehler und Ergebnisse zurücksetzen
-    setError(null);
-    setResult("");
-    setPreparing(true);
-    setCountdown(3);
+    
+    setError(null); // Löscht alte Fehlermeldungen
+    setResult("");  // Löscht das vorherige Scan-Ergebnis
+    setPreparing(true); // Setzt den Status auf "Scanner wird vorbereitet"
+    setCountdown(3);  // Startet einen Countdown bei 3sek
 
     try {
       // Kamera-Zugriff anfordern (bevorzugt rückseitige Kamera)
@@ -152,8 +154,9 @@ const QrBarcodeScanner = () => {
         video: { facingMode: "environment" },
       });
 
-      streamRef.current = stream;
+      streamRef.current = stream; // Speichert den Kamerastream in einem Ref, um später gestoppt/benutzt werden zu können
 
+      // Prüft, ob Video-Element auf der Seite vorhanden ist
       if (videoRef.current) {
         // Video-Stream an Video-Element binden
         videoRef.current.srcObject = stream;
@@ -172,11 +175,11 @@ const QrBarcodeScanner = () => {
                     // Countdown beendet - echtes Scannen starten
                     clearInterval(countdownTimerRef.current);
                     startActualScanning();
-                    return 0;
+                    return 0; // damit Countdown nicht ins Munus läuft
                   }
                   return prevCount - 1;
                 });
-              }, 1000);
+              }, 1000); // Alle 1000 Millisekunden (1sek)
             })
             .catch((err) => {
               setError("Video konnte nicht abgespielt werden: " + err.message);
@@ -193,19 +196,21 @@ const QrBarcodeScanner = () => {
     }
   };
 
-  // Das eigentliche Scannen starten
+  // Das eigentliche Scannen starten, wenn Countdown abgelaufen ist
   const startActualScanning = () => {
     console.log("Starte das eigentliche Scannen im Modus:", scanMode);
     setPreparing(false);
     setScanning(true);
 
+    // Prüft ist der Modus "Barcode" und ob der Barcode-Scanner bereit ist
     if (scanMode === "barcode" && zxingReaderRef.current) {
       // BARCODE-MODUS: ZXing Library verwenden
       try {
         zxingReaderRef.current.decodeFromConstraints(
-          { video: { facingMode: "environment" } },
+          { video: { facingMode: "environment" } }, // Vorgabe, welche Kamera verwendet werden soll
           videoRef.current,
-          (result, error) => {
+          // Wird aufgerufen, wenn Barcoder erkannt oder Fehler auftritt
+          (result, error) => { 
             if (result) {
               // Barcode erfolgreich erkannt
               console.log("Barcode gefunden:", result.getText());
@@ -226,7 +231,7 @@ const QrBarcodeScanner = () => {
     } else {
       // QR-CODE-MODUS: jsQR Library mit Canvas verwenden
       scanIntervalRef.current = setInterval(() => {
-        if (!videoRef.current || !canvasRef.current) return;
+        if (!videoRef.current || !canvasRef.current) return;  // Gibt es Video- und Canvas-Element? Sonst abbrechen
 
         const video = videoRef.current;
         const canvas = canvasRef.current;
@@ -234,7 +239,7 @@ const QrBarcodeScanner = () => {
 
         // Prüfen ob genug Video-Daten verfügbar sind
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
-          // Canvas-Größe an Video anpassen
+          // Canvas-Größe an Video anpassen, falls das nicht geht 640x480 als Standard
           canvas.width = video.videoWidth || 640;
           canvas.height = video.videoHeight || 480;
 
@@ -263,6 +268,9 @@ const QrBarcodeScanner = () => {
                 }
               );
 
+              // Wenn QR-Code gefunden, 
+              // wird das Ergebnis verarbeitet
+              // und das Scannen gestoppt
               if (code) {
                 // QR-Code gefunden
                 console.log("QR-Code gefunden:", code.data);
@@ -278,7 +286,7 @@ const QrBarcodeScanner = () => {
         } else {
           console.log("Video not ready yet. readyState:", video.readyState);
         }
-      }, 500); // Alle 500ms ein Frame analysieren
+      }, 500); // Alle 500ms ein Frame analysieren (2x pro sek)
     }
   };
 
@@ -290,7 +298,7 @@ const QrBarcodeScanner = () => {
     if (countdownTimerRef.current) {
       clearInterval(countdownTimerRef.current);
     }
-
+    // Scan-Intervall stoppen
     if (scanIntervalRef.current) {
       clearInterval(scanIntervalRef.current);
     }
@@ -323,14 +331,14 @@ const QrBarcodeScanner = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
+      ...prevData,  // kopiert alle bisherigen Werte
+      [name]: value,  // überschriebt das Feld, welches verändert wurde
     }));
   };
 
   // Neues Asset in der Datenbank erstellen
   const handleCreateAsset = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // verhindert, dass das Formular die Seite neu lädt
     setIsLoading(true);
 
     try {
