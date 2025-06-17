@@ -24,7 +24,7 @@ const AssetManager = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal für Löschbestätigung
   const [isLoading, setIsLoading] = useState(false); // Loading-State für API-Calls
   const [search, setSearch] = useState(''); // Suchbegriff für Filterung
-  const [sortOption, setSortOption] = useState('Neueste zuerst'); // Sortierungsoption
+  const [sortOption, setSortOption] = useState('Älteste zuerst'); // Sortierungsoption
   
   // Mobile UI States
   const [expandedCards, setExpandedCards] = useState(new Set()); // Expanded Card States
@@ -84,9 +84,9 @@ const AssetManager = () => {
           b.device_name.toLowerCase().localeCompare(a.device_name.toLowerCase())
         );
       
-      case 'Neueste zuerst':
+      case 'Älteste zuerst':
       default:
-        // Sortierung nach ID absteigend (neueste zuerst)
+        // Sortierung nach ID aufsteigend (älteste zuerst)
         return filteredAssets.sort((a, b) => a.id - b.id);
     }
   };
@@ -367,7 +367,7 @@ const AssetManager = () => {
                   value={sortOption}
                   onChange={handleSortChange}
                 >
-                  <option value="Neueste zuerst">Neueste zuerst</option>
+                  <option value="Älteste zuerst">Älteste zuerst</option>
                   <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
                 </select>
