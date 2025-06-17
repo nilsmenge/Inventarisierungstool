@@ -438,40 +438,45 @@
 .modal-footer{
   display: flex;
   justify-content: flex-end;
+  gap: 1rem;
   margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-top: 1px solid #e5e7eb;
 }
 
-.btn-secondary{
-  display: inline-flex;
-  align-items: center;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  border: none;
-}
-
-.btn-secondary:hover{
-  cursor: pointer;
-}
-
-.modal-footer .btn-secondary:not(:last-child){
-  margin-right: 0.5rem;
-}
-
+.btn-secondary,
 .btn-primary{
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #2563eb;
-  color: white;
-  border: none;
+  padding: 0.75rem 1.5rem; 
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  border: none;
+  min-width: 100px; 
+}
+
+.btn-secondary{
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover{
+  background-color: #e5e7eb;
+  cursor: pointer;
+}
+
+.modal-footer .btn-secondary:not(:last-child){
+  margin-right: 0;
+}
+
+.btn-primary{
+  background-color: #2563eb;
+  color: white;
 }
 
 .btn-primary:hover{

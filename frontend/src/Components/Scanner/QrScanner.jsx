@@ -135,6 +135,9 @@ const QrBarcodeScanner = () => {
   const handleScanResult = (scanResult) => {
     console.log("Scan-Ergebnis:", scanResult);
     setResult(scanResult);
+
+    // Scanner sofort stoppen
+    stopScanning()
     
     // Scan-Ergebnis als Seriennummer behandeln und Asset suchen
     fetchAssetBySerial(scanResult);
