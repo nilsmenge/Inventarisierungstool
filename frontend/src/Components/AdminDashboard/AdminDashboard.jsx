@@ -29,7 +29,7 @@ const AdminDashboard = () => {
   // Loading und UI States
   const [isLoading, setIsLoading] = useState(false); // Zeigt Loading-Spinner während API-Calls
   const [search, setSearch] = useState(''); // Suchbegriff für User-Filterung
-  const [sortOption, setSortOption] = useState('ID absteigend'); // Aktuelle Sortierungsoption
+  const [sortOption, setSortOption] = useState('Älteste zuerst'); // Aktuelle Sortierungsoption
 
   // Mobile UI States - für responsive Design
   const [expandedCards, setExpandedCards] = useState(new Set()); // Verwaltet welche Karten auf Mobile erweitert sind
@@ -88,9 +88,9 @@ const AdminDashboard = () => {
           b.last_name.toLowerCase().localeCompare(a.last_name.toLowerCase())
         );
       
-      case 'ID absteigend':
+      case 'Älteste zuerst':
       default:
-        // Sortierung nach ID absteigend (neueste User haben höhere IDs)
+        // Sortierung nach Älteste zuerst (neueste User haben höhere IDs)
         return filteredUsers.sort((a, b) => a.id - b.id);
     }
   };  
@@ -371,7 +371,7 @@ const AdminDashboard = () => {
                   value={sortOption}
                   onChange={handleSortChange}
                 >
-                  <option value="ID absteigend">ID absteigend</option>
+                  <option value="Älteste zuerst">Älteste zuerst</option>
                   <option value="Alphabetisch A-Z">Alphabetisch A-Z</option>
                   <option value="Alphabetisch Z-A">Alphabetisch Z-A</option>
             </select>
