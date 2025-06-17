@@ -53,26 +53,6 @@ def user_detail(request, email):
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# def user_detail(request, pk):
-#     try:
-#         user = User.objects.get(pk=pk)
-#     except User.DoesNotExist:
-#         return Response(status=status.HTTP_404_NOT_FOUND)
-
-#     if request.method == 'GET':
-#         serializer = UserSerializer(user)
-#         return Response(serializer.data)
-
-#     elif request.method == 'PUT':
-#         serializer = UserSerializer(user, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     elif request.method == 'DELETE':
-#         user.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 ##############
 ### ASSETS ###
@@ -119,23 +99,3 @@ def asset_detail(request, serial_no):
     elif request.method == 'DELETE':
         asset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    # try:
-    #     asset = Asset.objects.get(pk=pk)
-    # except Asset.DoesNotExist:
-    #     return Response(status=status.HTTP_404_NOT_FOUND)
-
-    # if request.method == 'GET':
-    #     serializer = AssetSerializer(asset)
-    #     return Response(serializer.data)
-
-    # elif request.method == 'PUT':
-    #     serializer = AssetSerializer(asset, data=request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # elif request.method == 'DELETE':
-    #     asset.delete()
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
