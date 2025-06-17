@@ -1,13 +1,13 @@
-/* EnhancedQrScanner.css */
+/* QrScanner.css */
 
-.enhanced-scanner-container {
+.scanner-container {
   min-height: 100vh;
   padding: 1.5rem;
   font-family: Arial, sans-serif;
   background-color: #f8fafc;
 }
 
-.enhanced-scanner-content {
+.scanner-content {
   max-width: 32rem;
   margin: 0 auto;
   background-color: white;

@@ -1,7 +1,16 @@
 // Importiere alle notwendigen Testing-Tools von Vitest (modernes Test-Framework)
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe,  //dient dazu, Tests in Gruppen zu organisieren 
+         it,  // beschreibt den einzelnen Testfall ("es sollte...") 
+         expect,  // überprüft, ob ein Wert wie erwartet ist 
+         vi,  // ist das Mocking-Tool von Vitest 
+         beforeEach, afterEach  // werden verwendet, um vor oder nach jedem Test Setup/Cleanup zu machen 
+        } from 'vitest'
 // Importiere React Testing Library Tools zum Rendern und Interagieren mit Komponenten
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render,  // Rendert eine Komponente für den Test 
+         screen,  // Bietet Zugriff auf das gerenderte DOM, um Element zu finden 
+         fireEvent, // Simuliert Benutzerinteraktionen, z.B. Klicks
+         waitFor  // Wartet, bis eine Bedingung erfüllt ist, z.B. asynchrone UI-Änderung 
+        } from '@testing-library/react'
 // Importiere Router für Navigation (wird für Tests gemockt)
 import { BrowserRouter } from 'react-router-dom'
 // Importiere die zu testende Komponente
@@ -81,7 +90,7 @@ describe('QrBarcodeScanner', () => {
     vi.resetAllMocks() // Setze alle Mocks zurück
   })
 
-  // === TEST 1: UI-Rendering ===
+  // === TEST 1: Rendering-Tests: Prüft ob die UI korrekt dargestellt wird ===
   it('sollte die Scanner-Oberfläche korrekt rendern', () => {
     // Rendere die Komponente mit Router-Wrapper
     render(
@@ -91,13 +100,17 @@ describe('QrBarcodeScanner', () => {
     )
 
     // Prüfe ob wichtige UI-Elemente vorhanden sind
+    /**
+     * screen.getByText(...) - sucht nach einem Element, das genau diesen Text enthält
+     * .toBeInTheDocument() - prüft, ob das gefunde Element tatsächlich existiert
+     */
     expect(screen.getByText('QR/Barcode Asset Scanner')).toBeInTheDocument()
     expect(screen.getByText('QR-Code')).toBeInTheDocument()
     expect(screen.getByText('Barcode')).toBeInTheDocument()
     expect(screen.getByText('QR-Code scannen')).toBeInTheDocument()
   })
 
-  // === TEST 2: Modus-Wechsel ===
+  // === TEST 2: Interaktion-Tests: Prüft Mode-Switching zwischen QR und Barcode ===
   it('sollte zwischen QR- und Barcode-Modi wechseln', () => {
     // Rendere Komponente
     render(
@@ -109,7 +122,6 @@ describe('QrBarcodeScanner', () => {
     // Finde die Buttons und Elemente
     const qrButton = screen.getByText('QR-Code')
     const barcodeButton = screen.getByText('Barcode')
-    const scanButton = screen.getByText('QR-Code scannen')
 
     // Standardmäßig sollte QR-Mode aktiv sein
     expect(qrButton).toHaveClass('active')
@@ -124,8 +136,8 @@ describe('QrBarcodeScanner', () => {
     expect(screen.getByText('Barcode scannen')).toBeInTheDocument()
   })
 
-  // === TEST 3: Erfolgreiches Asset finden ===
-  it('sollte erfolgreiches Asset-Abrufen handhaben und Asset-Modal anzeigen', async () => {
+  // === TEST 3: API-Tests: Testet die Fetch-Funktionalität für Asset-Abruf ===
+  it('sollte erfolgreiches Asset-Abrufen handhaben', async () => {
     // Erstelle Mock-Daten für ein gefundenes Asset
     const mockAssetData = {
       id: 1,
@@ -149,7 +161,7 @@ describe('QrBarcodeScanner', () => {
     )
 
     // Suche Container-Element
-    const component = screen.getByText('QR/Barcode Asset Scanner').closest('.enhanced-scanner-container')
+    const component = screen.getByText('QR/Barcode Asset Scanner').closest('.scanner-container')
     
     // Warte auf asynchrone Operationen
     await waitFor(() => {
@@ -157,7 +169,7 @@ describe('QrBarcodeScanner', () => {
       expect(true).toBe(true)
     })
 
-    // Test-Seriennummer
+    // Test-Seriennummer, um API-Aufruf zu simulieren
     const testSerial = 'TEST123'
     
     // Simuliere API-Aufruf direkt
@@ -169,8 +181,8 @@ describe('QrBarcodeScanner', () => {
     )
   })
 
-  // === TEST 4: Asset nicht gefunden ===
-  it('sollte "Asset nicht gefunden" handhaben und Erstellungs-Modal anzeigen', async () => {
+  // === TEST 4: Error-Handling: Testet Netzwerkfehler und 404-Responses ===
+  it('sollte "Asset nicht gefunden" handhaben', async () => {
     // Mock für 404-Antwort (Asset existiert nicht)
     fetchMock.mockResolvedValueOnce({
       ok: false, // HTTP Status nicht OK
@@ -198,7 +210,7 @@ describe('QrBarcodeScanner', () => {
     // Kommentar: Bei 404 sollte das Create-Modal geöffnet werden
   })
 
-  // === TEST 5: Netzwerkfehler ===
+  // === TEST 5: Error-Handling: Testet Netzwerkfehler und 404-Responses ===
   it('sollte Netzwerkfehler behandeln', async () => {
     // Mock für Netzwerkfehler (kein Internet, Server down, etc.)
     fetchMock.mockRejectedValueOnce(new Error('Network error'))
@@ -227,7 +239,7 @@ describe('QrBarcodeScanner', () => {
     )
   })
 
-  // === TEST 6: Navigation ===
+  // === TEST 6: Navigation: Testet den Zurück-Button ===
   it('sollte zurück navigieren wenn Zurück-Button geklickt wird', () => {
     // Rendere Komponente
     render(
@@ -245,13 +257,13 @@ describe('QrBarcodeScanner', () => {
     expect(mockNavigate).toHaveBeenCalledWith('/navigator')
   })
 
-  // === TEST 7: Button-Zustand während Scanning ===
+  // === TEST 7: State-Management: Testet Button-Zustandsänderungen ===
   it('sollte Modus-Buttons während des Scannens deaktivieren', async () => {
     // Mock für Kamera-Stream
     const mockStream = {
-      getTracks: vi.fn(() => [{ stop: vi.fn() }])
+      getTracks: vi.fn(() => [{ stop: vi.fn() }]) // gibt einen Array zurück mit einem Objekt, das eine Stop-Funktion hat
     }
-    global.navigator.mediaDevices.getUserMedia.mockResolvedValue(mockStream)
+    global.navigator.mediaDevices.getUserMedia.mockResolvedValue(mockStream)  // liefert Kamera-Stream zurück, wenn sie aufgerufen wird
 
     // Rendere Komponente
     render(

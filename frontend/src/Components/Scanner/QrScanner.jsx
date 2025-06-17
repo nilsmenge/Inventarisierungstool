@@ -1,4 +1,4 @@
-// EnhancedQrScanner.jsx
+// QrScanner.jsx
 // Hauptkomponente für das Scannen von QR-Codes und Barcodes zur Asset-Verwaltung
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -407,8 +407,8 @@ const QrBarcodeScanner = () => {
 
   // ===== RENDER =====
   return (
-    <div className="enhanced-scanner-container">
-      <div className="enhanced-scanner-content">
+    <div className="scanner-container">
+      <div className="scanner-content">
         {/* Header mit Zurück-Button und Titel */}
         <div className="scanner-header">
           <button
